@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AID Math Adventure - Topics 2 & 3</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Fredoka:wght@400;500;600;700&family=Caveat:wght@600;700&family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<style>
+:root{
+  --bg-0:#06140a; --bg-1:#0a2317; --bg-2:#102d1d;
+  --pitch:#2d8a3e; --pitch-light:#4cb35a; --pitch-dark:#1f6630;
+  --gold:#FFD93D; --gold-deep:#E8A317; --orange:#FF6B35;
+  --cream:#FFF8E7; --success:#4ade80; --error:#ef4444;
+  --text:#f5fff8; --text-muted:#9fc7ab; --line:rgba(255,255,255,0.08);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%}
+body{font-family:'Fredoka',sans-serif;background:var(--bg-0);color:var(--text);overflow-x:hidden;min-height:100vh}
+.font-display{font-family:'Bungee',sans-serif;letter-spacing:.02em}
+.font-sign{font-family:'Caveat',cursive}
+.font-body{font-family:'Lexend',sans-serif}
+.bg-stadium{position:fixed;inset:0;z-index:-2;background:radial-gradient(1200px 700px at 50% -10%,rgba(255,217,61,.10),transparent 60%),radial-gradient(900px 600px at 90% 20%,rgba(255,107,53,.08),transparent 60%),radial-gradient(900px 600px at 10% 80%,rgba(76,179,90,.10),transparent 60%),linear-gradient(180deg,#06140a 0%,#0a2317 60%,#06140a 100%)}
+.bg-noise::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.04 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");opacity:.5}
+.screen{display:none;min-height:100vh;width:100%;padding:24px}
+.screen.active{display:block;animation:fadeIn .5s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.aid-logo{position:relative;width:240px;height:240px;display:flex;align-items:center;justify-content:center;margin:0 auto}
+.aid-hex{position:absolute;inset:0;background:conic-gradient(from 0deg,var(--gold),var(--orange),var(--gold),var(--gold-deep),var(--gold));clip-path:polygon(50% 0%,95% 25%,95% 75%,50% 100%,5% 75%,5% 25%);filter:drop-shadow(0 0 30px rgba(255,217,61,.45));animation:spinSlow 18s linear infinite}
+.aid-hex-inner{position:absolute;inset:8px;background:linear-gradient(160deg,#0a2317,#06140a);clip-path:polygon(50% 0%,95% 25%,95% 75%,50% 100%,5% 75%,5% 25%);display:flex;align-items:center;justify-content:center;flex-direction:column}
+.aid-letters{font-family:'Bungee',sans-serif;font-size:62px;background:linear-gradient(180deg,#FFE680,#FFD93D 40%,#E8A317);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1;text-shadow:0 0 30px rgba(255,217,61,.3)}
+.aid-sub{font-size:10px;letter-spacing:4px;color:var(--text-muted);margin-top:6px}
+.aid-orbit{position:absolute;inset:-12px;border-radius:50%;border:1px dashed rgba(255,217,61,.25);animation:spinSlow 24s linear infinite reverse}
+.aid-orbit::before,.aid-orbit::after{content:"";position:absolute;width:10px;height:10px;border-radius:50%;background:var(--gold);box-shadow:0 0 12px var(--gold);top:50%;left:-5px;transform:translateY(-50%)}
+.aid-orbit::after{left:auto;right:-5px;background:var(--orange);box-shadow:0 0 12px var(--orange)}
+@keyframes spinSlow{to{transform:rotate(360deg)}}
+.btn{display:inline-flex;align-items:center;gap:10px;justify-content:center;padding:14px 26px;border-radius:14px;font-weight:600;font-size:16px;border:1px solid transparent;cursor:pointer;transition:all .25s ease;font-family:'Fredoka',sans-serif}
+.btn-primary{background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#1a1100;border-color:rgba(255,255,255,.2);box-shadow:0 8px 24px rgba(255,217,61,.25),inset 0 1px 0 rgba(255,255,255,.4)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(255,217,61,.35)}
+.btn-ghost{background:rgba(255,255,255,.05);color:var(--text);border-color:rgba(255,255,255,.12);backdrop-filter:blur(8px)}
+.btn-ghost:hover{background:rgba(255,255,255,.1)}
+.glass-card{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.01));border:1px solid var(--line);border-radius:24px;backdrop-filter:blur(10px)}
+.topic-card{position:relative;overflow:hidden;cursor:pointer;border-radius:22px;padding:28px 24px;background:linear-gradient(160deg,rgba(255,217,61,.08),rgba(255,107,53,.05));border:1px solid rgba(255,217,61,.2);transition:all .3s ease}
+.topic-card:hover{transform:translateY(-4px);border-color:var(--gold);box-shadow:0 16px 40px rgba(255,217,61,.15)}
+.topic-card::after{content:"";position:absolute;top:-30%;right:-20%;width:200px;height:200px;background:radial-gradient(circle,rgba(255,217,61,.25),transparent 70%);filter:blur(20px)}
+.lesson-pill{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid var(--line);cursor:pointer;transition:all .25s ease}
+.lesson-pill:hover{background:rgba(255,217,61,.08);border-color:rgba(255,217,61,.4);transform:translateX(4px)}
+.lesson-num{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#1a1100;font-weight:700;font-size:14px;flex-shrink:0}
+.scoreboard-top{display:flex;align-items:center;justify-content:center;gap:16px;padding:12px 24px;border-radius:14px;background:rgba(0,0,0,.6);border:1px solid rgba(255,217,61,.3);backdrop-filter:blur(10px)}
+.stadium{position:relative;border-radius:24px;overflow:hidden;background:linear-gradient(180deg,#1a1f2e 0%,#1a1f2e 22%,#2a4a36 22%,#2a4a36 100%);border:1px solid var(--line);min-height:580px}
+.stands{position:absolute;top:0;left:0;right:0;height:22%;background:repeating-linear-gradient(90deg,rgba(255,255,255,.04) 0 18px,transparent 18px 36px),linear-gradient(180deg,#1a1f2e,#0e1422);border-bottom:3px solid rgba(255,255,255,.08);overflow:hidden}
+.stands::before{content:"";position:absolute;inset:0;background:radial-gradient(2px 2px at 10% 30%,rgba(255,255,255,.5),transparent),radial-gradient(2px 2px at 25% 60%,rgba(255,217,61,.4),transparent),radial-gradient(2px 2px at 45% 20%,rgba(255,255,255,.4),transparent),radial-gradient(2px 2px at 65% 70%,rgba(255,107,53,.4),transparent),radial-gradient(2px 2px at 85% 40%,rgba(255,255,255,.4),transparent),radial-gradient(2px 2px at 15% 80%,rgba(255,255,255,.3),transparent),radial-gradient(2px 2px at 75% 15%,rgba(255,217,61,.3),transparent)}
+.pitch{position:absolute;top:22%;left:0;right:0;bottom:0;background:repeating-linear-gradient(180deg,rgba(255,255,255,.03) 0 30px,transparent 30px 60px),linear-gradient(180deg,var(--pitch-light),var(--pitch))}
+.pitch-lines{position:absolute;inset:0;pointer-events:none}
+.pitch-lines::before{content:"";position:absolute;top:0;left:50%;width:2px;height:60%;background:rgba(255,255,255,.25);transform:translateX(-50%)}
+.pitch-lines::after{content:"";position:absolute;top:18%;left:30%;width:40%;height:30%;border:2px solid rgba(255,255,255,.2);border-radius:6px}
+.goal-frame{position:absolute;top:6%;left:50%;transform:translateX(-50%);width:240px;height:110px;border:5px solid #fff;border-bottom:none;border-radius:8px 8px 0 0;background:repeating-linear-gradient(90deg,rgba(255,255,255,.15) 0 14px,transparent 14px 28px),repeating-linear-gradient(0deg,rgba(255,255,255,.15) 0 14px,transparent 14px 28px),rgba(0,0,0,.2);box-shadow:0 0 30px rgba(255,217,61,.2)}
+.keeper{position:absolute;top:14%;left:50%;transform:translateX(-50%);font-size:50px;transition:transform .6s cubic-bezier(.34,1.56,.64,1);filter:drop-shadow(0 4px 8px rgba(0,0,0,.5));z-index:5}
+.keeper.dive-left{transform:translateX(-90px) rotate(-15deg)}
+.keeper.dive-right{transform:translateX(90px) rotate(15deg)}
+.keeper.dive-center{transform:translateX(-50%) translateY(0)}
+.ball{position:absolute;width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#d8d8d8 60%,#999);box-shadow:inset -4px -4px 6px rgba(0,0,0,.25),0 6px 12px rgba(0,0,0,.4);z-index:6;display:flex;align-items:center;justify-content:center;font-size:18px}
+.ball::before{content:"";position:absolute;inset:6px;border-radius:50%;background:radial-gradient(circle at 50% 50%,#222 0 5px,transparent 5px),radial-gradient(circle at 20% 50%,#222 0 4px,transparent 4px),radial-gradient(circle at 80% 50%,#222 0 4px,transparent 4px),radial-gradient(circle at 50% 20%,#222 0 4px,transparent 4px),radial-gradient(circle at 50% 80%,#222 0 4px,transparent 4px);opacity:.6}
+.goal-flash{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 30%,rgba(255,217,61,.6),transparent 60%);opacity:0}
+.goal-flash.show{animation:flashGoal 1.2s ease}
+@keyframes flashGoal{0%{opacity:0}20%{opacity:1}100%{opacity:0}}
+.goal-text{position:absolute;top:35%;left:50%;transform:translate(-50%,-50%) scale(0);font-family:'Bungee',sans-serif;font-size:80px;color:var(--gold);text-shadow:0 0 30px rgba(255,217,61,.8),0 6px 0 var(--orange);letter-spacing:4px;z-index:20;pointer-events:none}
+.goal-text.show{animation:popGoal 1.8s ease forwards}
+@keyframes popGoal{0%{transform:translate(-50%,-50%) scale(0) rotate(-15deg)}40%{transform:translate(-50%,-50%) scale(1.15) rotate(5deg)}60%{transform:translate(-50%,-50%) scale(1) rotate(0)}100%{transform:translate(-50%,-50%) scale(1) rotate(0);opacity:1}}
+.save-text{position:absolute;top:35%;left:50%;transform:translate(-50%,-50%) scale(0);font-family:'Bungee',sans-serif;font-size:54px;color:var(--error);text-shadow:0 0 20px rgba(239,68,68,.6);z-index:20;pointer-events:none}
+.save-text.show{animation:popSave 1.4s ease forwards}
+@keyframes popSave{0%{transform:translate(-50%,-50%) scale(0)}50%{transform:translate(-50%,-50%) scale(1.1)}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}
+.quiz-panel{position:absolute;left:0;right:0;bottom:0;padding:20px 22px 22px;background:linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,.85));border-top:1px solid rgba(255,217,61,.2);backdrop-filter:blur(6px);z-index:8}
+.q-progress{display:flex;gap:6px;margin-bottom:12px}
+.q-dot{flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,.1);transition:.3s}
+.q-dot.done{background:var(--success)}
+.q-dot.wrong{background:var(--error)}
+.q-dot.current{background:var(--gold);box-shadow:0 0 8px var(--gold)}
+.q-text{font-size:22px;font-weight:600;line-height:1.4;margin-bottom:14px;color:#fff;text-align:center}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.choice{padding:18px 20px;border-radius:14px;background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.12);cursor:pointer;font-size:18px;font-weight:600;transition:all .2s ease;display:flex;align-items:center;gap:12px;color:#fff;font-family:'Fredoka',sans-serif;text-align:left}
+.choice:hover:not(.disabled){background:rgba(255,217,61,.15);border-color:var(--gold);transform:translateY(-2px)}
+.choice .badge{width:34px;height:34px;border-radius:8px;flex-shrink:0;background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#1a1100;display:flex;align-items:center;justify-content:center;font-weight:700}
+.choice.correct{background:rgba(74,222,128,.2);border-color:var(--success)}
+.choice.wrong{background:rgba(239,68,68,.2);border-color:var(--error)}
+.choice.disabled{cursor:not-allowed;opacity:.7}
+.quiz-toolbar{display:flex;justify-content:space-between;align-items:center;margin-top:14px;gap:10px;flex-wrap:wrap}
+.tool-btn{padding:10px 16px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:var(--text);transition:.2s;font-family:'Fredoka',sans-serif}
+.tool-btn:hover{background:rgba(255,217,61,.12);border-color:var(--gold)}
+.tool-btn.hint{color:var(--gold);border-color:rgba(255,217,61,.3)}
+.hint-box{margin-top:10px;padding:12px 16px;border-radius:10px;background:rgba(255,217,61,.1);border:1px dashed rgba(255,217,61,.4);color:#fff;font-size:14px;display:none}
+.hint-box.show{display:block;animation:fadeIn .4s ease}
+.hint-box i{color:var(--gold);margin-right:6px}
+.steps-box{margin-top:12px;padding:16px;border-radius:12px;background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.4);display:none}
+.steps-box.show{display:block;animation:fadeIn .4s ease}
+.steps-box h4{margin:0 0 8px;font-size:15px;color:var(--orange);display:flex;align-items:center;gap:8px}
+.steps-box ol{margin:0;padding-left:20px;font-size:14px;line-height:1.7}
+.steps-box li{margin-bottom:4px}
+.steps-box .answer-line{margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,107,53,.2);font-weight:700;color:var(--success);font-size:16px}
+.cheer-toast{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);padding:14px 28px;border-radius:30px;background:linear-gradient(135deg,var(--success),#16a34a);color:#fff;font-weight:700;font-size:18px;z-index:1000;opacity:0;box-shadow:0 10px 30px rgba(74,222,128,.4);transition:.4s ease;pointer-events:none}
+.cheer-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.cheer-toast.error{background:linear-gradient(135deg,var(--error),#b91c1c);box-shadow:0 10px 30px rgba(239,68,68,.4)}
+.exp-card{background:linear-gradient(160deg,rgba(255,255,255,.04),rgba(255,255,255,.01));border:1px solid var(--line);border-radius:24px;padding:32px}
+.exp-page{display:none}
+.exp-page.active{display:block;animation:fadeIn .4s ease}
+.exp-title{font-size:32px;color:var(--gold);margin-bottom:8px}
+.exp-line{font-size:20px;line-height:1.7;margin-bottom:14px;color:#fff}
+.exp-line .hl{color:var(--gold);font-weight:700}
+.exp-line .hl-o{color:var(--orange);font-weight:700}
+.exp-line .hl-g{color:var(--success);font-weight:700}
+.numline{display:flex;align-items:center;justify-content:center;gap:0;margin:18px 0;padding:14px;border-radius:14px;background:rgba(0,0,0,.3);position:relative;flex-wrap:wrap}
+.numline .point{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);font-weight:700;font-size:14px;color:#fff;position:relative;z-index:2}
+.numline .point.neg{background:rgba(239,68,68,.2);border-color:var(--error)}
+.numline .point.zero{background:rgba(255,217,61,.2);border-color:var(--gold)}
+.numline .point.pos{background:rgba(74,222,128,.2);border-color:var(--success)}
+.numline .seg{width:38px;height:3px;background:rgba(255,255,255,.3)}
+.numline .arrow{font-size:22px;color:rgba(255,255,255,.5)}
+.visual-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin:16px 0}
+.viz-card{padding:18px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid var(--line);text-align:center}
+.viz-card .big{font-size:34px;font-weight:700;color:var(--gold);font-family:'Bungee',sans-serif}
+.viz-card .lbl{font-size:13px;color:var(--text-muted);margin-top:4px}
+.minigame-stage{position:relative;border-radius:24px;overflow:hidden;background:linear-gradient(180deg,#0a1a3e,#1a2a5e);border:1px solid var(--line);min-height:480px;padding:0}
+.mg-header{padding:14px 20px;display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,.4);border-bottom:1px solid var(--line)}
+.mg-timer{font-family:'Bungee',sans-serif;font-size:24px;color:var(--gold)}
+.mg-target{font-size:16px;color:#fff;font-weight:600}
+.mg-score{font-family:'Bungee',sans-serif;font-size:22px;color:var(--success)}
+.mg-area{position:relative;width:100%;height:420px;overflow:hidden}
+.mg-instr{text-align:center;padding:18px;font-size:20px;font-weight:600;color:#fff;background:rgba(0,0,0,.3)}
+.fall-item {position:absolute;top:-50px;font-size:40px;cursor:pointer;animation:fallDown linear forwards;transition:transform .1s;user-select:none;filter:drop-shadow(0 4px 6px rgba(0,0,0,.3));}
+.fall-item:active {transform: scale(1.3);}
+.fall-item.popped {animation: pop .3s forwards;}
+@keyframes fallDown { from { transform: translateY(0); } to { transform: translateY(470px); } }
+.target-circle{position:absolute;width:100px;height:100px;border-radius:50%;border:6px solid var(--gold);background:radial-gradient(circle,rgba(255,217,61,.2),rgba(255,107,53,.3));cursor:pointer;box-shadow:0 0 30px rgba(255,217,61,.4);transition:transform .15s}
+.target-circle:active{transform:scale(0.9)}
+.target-circle.hit{animation:pop .3s forwards}
+.mole-hole{position:absolute;width:120px;height:80px;border-radius:50% 50% 0 0 / 100% 100% 0 0;background:radial-gradient(ellipse at top,#5a3a1a,#2a1a0a);border:2px solid #4a2a0a;overflow:hidden;cursor:pointer}
+.mole-emoji{position:absolute;bottom:-60px;left:50%;transform:translateX(-50%);font-size:50px;transition:bottom .25s ease}
+.mole-hole.up .mole-emoji{bottom:5px}
+.rank-row{display:flex;align-items:center;gap:14px;padding:14px 18px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid var(--line);transition:.3s}
+.rank-row.you{background:linear-gradient(90deg,rgba(255,217,61,.15),rgba(255,107,53,.08));border-color:var(--gold);box-shadow:0 0 20px rgba(255,217,61,.15)}
+.rank-num{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Bungee',sans-serif;font-size:20px;background:rgba(255,255,255,.06)}
+.rank-num.r1{background:linear-gradient(135deg,#FFD93D,#E8A317);color:#1a1100}
+.rank-num.r2{background:linear-gradient(135deg,#cbd5e1,#94a3b8);color:#1a1100}
+.rank-num.r3{background:linear-gradient(135deg,#d97706,#92400e);color:#fff}
+.rank-name{flex:1;font-size:18px;font-weight:600}
+.rank-score{font-size:14px;color:var(--text-muted)}
+.cert-wrap{max-width:900px;margin:0 auto;background:linear-gradient(180deg,#fffdf5,#fff8e7);color:#1a1100;border-radius:8px;padding:60px 70px;position:relative;box-shadow:0 30px 60px rgba(0,0,0,.5)}
+.cert-wrap::before,.cert-wrap::after{content:"";position:absolute;border:3px solid var(--gold-deep);border-radius:4px}
+.cert-wrap::before{inset:14px;border-color:#E8A317}
+.cert-wrap::after{inset:24px;border-color:#FFD93D;border-width:1px}
+.cert-seal{position:absolute;top:50px;right:60px;width:110px;height:110px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#FFD93D,#E8A317 70%,#8a5a0a);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(232,163,23,.4);border:4px dashed #fff;color:#1a1100;font-family:'Bungee',sans-serif;font-size:14px;text-align:center;line-height:1.1}
+.cert-title{font-family:'Bungee',sans-serif;font-size:38px;color:#E8A317;text-align:center;letter-spacing:2px}
+.cert-sub{text-align:center;color:#8a5a0a;letter-spacing:6px;font-size:13px;margin-bottom:30px}
+.cert-body{font-size:18px;line-height:1.8;color:#3a2a0a;text-align:center;margin:30px 0}
+.cert-name{font-family:'Bungee',sans-serif;font-size:42px;color:#1a1100;margin:10px 0;text-transform:uppercase}
+.cert-details{display:flex;justify-content:space-around;margin:30px 0;flex-wrap:wrap;gap:14px}
+.cert-detail{font-size:15px;color:#3a2a0a;text-align:center}
+.cert-detail .v{font-family:'Bungee',sans-serif;font-size:22px;color:#E8A317;display:block;margin-top:4px}
+.cert-sign{display:flex;justify-content:space-between;align-items:flex-end;margin-top:40px;flex-wrap:wrap;gap:20px}
+.cert-sign-block{text-align:center}
+.cert-sign-line{width:200px;border-top:2px solid #1a1100;margin-bottom:6px}
+.cert-sign-name{font-family:'Caveat',cursive;font-size:38px;color:#1a1100;line-height:1}
+.cert-sign-role{font-size:13px;color:#6a4a0a;letter-spacing:2px}
+.cert-aid-logo{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#FFD93D,#E8A317);display:flex;align-items:center;justify-content:center;font-family:'Bungee',sans-serif;font-size:20px;color:#1a1100;margin:0 auto 6px;border:3px solid #1a1100}
+
+@media print {
+  body { background: #fff !important; }
+  body * { visibility: hidden; }
+  #screen-certificate, #screen-certificate * { visibility: visible; }
+  #screen-certificate { position: absolute; left: 0; top: 0; width: 100%; padding: 0 !important; display: block !important; }
+  .cert-wrap { box-shadow: none !important; border: none !important; margin: 0 !important; width: 100% !important; max-width: 100% !important; padding: 40px !important; border-radius: 0 !important; }
+  .no-print { display: none !important; }
+  .bg-stadium, .bg-noise { display: none !important; }
+}
+
+.hidden{display:none!important}
+.input-name{width:100%;padding:18px 22px;font-size:22px;border-radius:14px;background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.15);color:#fff;font-family:'Fredoka',sans-serif;text-align:center;transition:.2s}
+.input-name:focus{outline:none;border-color:var(--gold);background:rgba(255,217,61,.06)}
+.input-name::placeholder{color:var(--text-muted)}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:var(--bg-0)}
+::-webkit-scrollbar-thumb{background:var(--bg-2);border-radius:10px}
+::-webkit-scrollbar-thumb:hover{background:var(--pitch-dark)}
+.topic-icon-box{width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,rgba(255,217,61,.25),rgba(255,107,53,.2));border:1px solid rgba(255,217,61,.3);display:flex;align-items:center;justify-content:center;font-size:30px;color:var(--gold);margin-bottom:14px}
+@media (max-width:640px){.choices{grid-template-columns:1fr}.cert-wrap{padding:30px 24px}.cert-title{font-size:26px}.cert-name{font-size:30px}.goal-text{font-size:54px}.save-text{font-size:36px}}
+</style>
+</head>
+<body>
+<div class="bg-stadium"></div>
+<div class="bg-noise"></div>
+
+<section id="screen-start" class="screen active">
+  <div class="min-h-screen flex flex-col items-center justify-center text-center px-6">
+    <div class="aid-logo mb-8">
+      <div class="aid-orbit"></div>
+      <div class="aid-hex"></div>
+      <div class="aid-hex-inner">
+        <div class="aid-letters">AID</div>
+        <div class="aid-sub">MATH ADVENTURE</div>
+      </div>
+    </div>
+    <h1 class="font-display text-3xl md:text-4xl mt-4" style="color:#fff;letter-spacing:3px">MATH ADVENTURE</h1>
+    <p class="font-sign text-2xl mt-3" style="color:var(--gold)">design by Mr. Akram</p>
+    <p class="mt-4 max-w-md text-base" style="color:var(--text-muted)">Learn math the fun way — score goals, beat challenges, and become a champion!</p>
+    <div class="glass-card mt-10 p-8 w-full max-w-md">
+      <label class="block text-sm mb-3" style="color:var(--text-muted);letter-spacing:2px">ENTER YOUR FIRST NAME</label>
+      <input id="nameInput" class="input-name" type="text" placeholder="Type your name..." maxlength="14" autocomplete="off">
+      <button id="startBtn" class="btn btn-primary w-full mt-5 text-lg">
+        <i class="fa-solid fa-play"></i> START PLAYING
+      </button>
+    </div>
+    <p class="mt-8 text-xs" style="color:var(--text-muted);letter-spacing:1px">Become a math champion today!</p>
+  </div>
+</section>
+
+<section id="screen-topics" class="screen">
+  <div class="max-w-5xl mx-auto">
+    <div class="flex items-center justify-between mb-8 flex-wrap gap-4">
+      <div>
+        <p style="color:var(--text-muted);letter-spacing:3px;font-size:12px">WELCOME</p>
+        <h1 class="font-display text-2xl md:text-3xl mt-1" style="color:var(--gold)">Hi, <span id="welcomeName">Player</span>!</h1>
+        <p class="mt-1" style="color:var(--text-muted)">Choose your topic to begin the match</p>
+      </div>
+      <button class="btn btn-ghost" onclick="goToScreen('screen-start')"><i class="fa-solid fa-right-from-bracket"></i> Exit</button>
+    </div>
+    <h2 class="font-display text-xl mb-4" style="color:#fff">TOPICS</h2>
+    <div id="topicsList" class="grid md:grid-cols-2 gap-5"></div>
+  </div>
+</section>
+
+<section id="screen-lessons" class="screen">
+  <div class="max-w-4xl mx-auto">
+    <div class="flex items-center justify-between mb-8 flex-wrap gap-4">
+      <button class="btn btn-ghost" onclick="goToScreen('screen-topics')"><i class="fa-solid fa-arrow-left"></i> Topics</button>
+      <div class="text-right">
+        <p style="color:var(--text-muted);font-size:12px;letter-spacing:2px">TOPIC</p>
+        <h2 id="lessonsTopicTitle" class="font-display text-xl" style="color:var(--gold)"></h2>
+      </div>
+    </div>
+    <h3 class="font-display text-lg mb-4">CHOOSE A LESSON</h3>
+    <div id="lessonsList" class="space-y-3"></div>
+  </div>
+</section>
+
+<section id="screen-explanation" class="screen">
+  <div class="max-w-3xl mx-auto">
+    <div class="flex items-center justify-between mb-6 flex-wrap gap-4">
+      <button class="btn btn-ghost" onclick="goToScreen('screen-lessons')"><i class="fa-solid fa-arrow-left"></i> Back to lessons</button>
+      <div class="text-right">
+        <p style="color:var(--text-muted);font-size:11px;letter-spacing:2px">LESSON</p>
+        <h2 id="expLessonTitle" class="font-display text-lg" style="color:var(--gold)"></h2>
+      </div>
+    </div>
+    <div class="exp-card">
+      <div id="expPages"></div>
+      <div class="flex items-center justify-between mt-8">
+        <button id="expPrev" class="btn btn-ghost"><i class="fa-solid fa-chevron-left"></i> Previous</button>
+        <span id="expPageIndicator" style="color:var(--text-muted);font-size:14px"></span>
+        <button id="expNext" class="btn btn-primary">Next <i class="fa-solid fa-chevron-right"></i></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="screen-quiz" class="screen">
+  <div class="max-w-4xl mx-auto">
+    <div class="grid grid-cols-3 items-center mb-4 gap-3">
+      <div class="flex justify-start">
+        <button class="btn btn-ghost" onclick="confirmExitQuiz()"><i class="fa-solid fa-arrow-left"></i> Exit</button>
+      </div>
+      <div class="flex justify-center">
+        <div class="scoreboard-top">
+          <div class="text-center">
+            <div class="text-[10px] tracking-widest" style="color:var(--success)">GOALS</div>
+            <div class="font-display text-xl" style="color:var(--gold)" id="scoreGoals">0</div>
+          </div>
+          <div class="w-px h-8 bg-white/15"></div>
+          <div class="text-center">
+            <div class="text-[10px] tracking-widest" style="color:var(--error)">MISSES</div>
+            <div class="font-display text-xl" style="color:var(--error)" id="scoreMisses">0</div>
+          </div>
+          <div class="w-px h-8 bg-white/15"></div>
+          <div class="text-center">
+            <div class="text-[10px] tracking-widest" style="color:var(--text-muted)">PLAYER</div>
+            <div class="font-display text-sm uppercase" style="color:#fff" id="scorePlayer">YOU</div>
+          </div>
+        </div>
+      </div>
+      <div class="text-right">
+        <p style="color:var(--text-muted);font-size:11px;letter-spacing:2px">QUESTION</p>
+        <p class="font-display" style="color:#fff"><span id="qNumber">1</span> / 15</p>
+      </div>
+    </div>
+    
+    <div class="text-center mb-2">
+      <h2 id="quizLessonTitle" class="font-display text-base" style="color:var(--gold)"></h2>
+    </div>
+
+    <div class="stadium">
+      <div class="stands"></div>
+      <div class="pitch"><div class="pitch-lines"></div></div>
+      <div class="goal-frame"></div>
+      <div class="keeper" id="keeper">🧤</div>
+      <div class="ball hidden" id="ball" style="bottom:130px;left:50%;transform:translateX(-50%)">⚽</div>
+      <div class="goal-flash" id="goalFlash"></div>
+      <div class="goal-text" id="goalText">GOAL!</div>
+      <div class="save-text" id="saveText">SAVED!</div>
+      <div class="quiz-panel">
+        <div class="q-progress" id="qProgress"></div>
+        <div class="q-text" id="qText"></div>
+        <div class="choices" id="qChoices"></div>
+        <div class="hint-box" id="hintBox"><i class="fa-solid fa-lightbulb"></i><span id="hintText"></span></div>
+        <div class="steps-box" id="stepsBox">
+          <h4><i class="fa-solid fa-shoe-prints"></i> Step by step</h4>
+          <ol id="stepsList"></ol>
+          <div class="answer-line" id="answerLine"></div>
+        </div>
+        <div class="quiz-toolbar">
+          <button class="tool-btn hint" id="hintBtn"><i class="fa-solid fa-lightbulb"></i> Hint</button>
+          <button class="tool-btn" id="skipBtn"><i class="fa-solid fa-forward"></i> Back to Question</button>
+          <button class="btn btn-primary hidden" id="nextBtn">Next Question <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="screen-minigame" class="screen">
+  <div class="max-w-4xl mx-auto">
+    <div class="text-center mb-5">
+      <p style="color:var(--text-muted);letter-spacing:3px;font-size:12px">BREAK TIME</p>
+      <h2 class="font-display text-2xl mt-1" style="color:var(--gold)">MINI BONUS GAME!</h2>
+      <p style="color:var(--text-muted)">A quick 10-second fun break</p>
+    </div>
+    <div class="minigame-stage">
+      <div class="mg-header">
+        <div class="mg-target" id="mgTarget"></div>
+        <div class="mg-timer" id="mgTimer">10s</div>
+        <div class="mg-score" id="mgScore">0</div>
+      </div>
+      <div class="mg-instr" id="mgInstr"></div>
+      <div class="mg-area" id="mgArea"></div>
+    </div>
+    <div class="text-center mt-5">
+      <button class="btn btn-primary hidden" id="mgContinueBtn">Continue Quiz <i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+  </div>
+</section>
+
+<section id="screen-results" class="screen">
+  <div class="max-w-3xl mx-auto">
+    <div class="text-center mb-6">
+      <p style="color:var(--text-muted);letter-spacing:3px;font-size:12px">FULL TIME</p>
+      <h1 class="font-display text-3xl mt-1" style="color:var(--gold)">MATCH RESULTS</h1>
+    </div>
+    <div class="glass-card p-6 mb-6">
+      <div class="grid grid-cols-3 gap-4 text-center">
+        <div><div class="font-display text-3xl" style="color:var(--success)" id="resGoals">0</div><div style="color:var(--text-muted);font-size:12px;letter-spacing:2px">GOALS SCORED</div></div>
+        <div><div class="font-display text-3xl" style="color:var(--error)" id="resMisses">0</div><div style="color:var(--text-muted);font-size:12px;letter-spacing:2px">MISSED</div></div>
+        <div><div class="font-display text-3xl" style="color:var(--gold)" id="resAccuracy">0%</div><div style="color:var(--text-muted);font-size:12px;letter-spacing:2px">ACCURACY</div></div>
+      </div>
+    </div>
+    <h3 class="font-display text-lg mb-4">LEAGUE RANKING</h3>
+    <div id="rankingList" class="space-y-3 mb-6"></div>
+    <div class="flex gap-3 justify-center flex-wrap no-print">
+      <button class="btn btn-primary" onclick="showCertificate()"><i class="fa-solid fa-award"></i> Get Certificate</button>
+      <button class="btn btn-ghost" onclick="goToScreen('screen-topics')"><i class="fa-solid fa-rotate-right"></i> Play Another Lesson</button>
+    </div>
+  </div>
+</section>
+
+<section id="screen-certificate" class="screen">
+  <div class="max-w-4xl mx-auto">
+    <div class="flex justify-between items-center mb-4 no-print">
+      <button class="btn btn-ghost" onclick="goToScreen('screen-results')"><i class="fa-solid fa-arrow-left"></i> Back</button>
+      <button class="btn btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> Print Certificate</button>
+    </div>
+    <div class="cert-wrap" id="certWrap">
+      <div class="cert-seal">AID<br>MATH</div>
+      <div class="cert-aid-logo" style="position:relative;top:0;left:0;margin:0 0 14px">AID</div>
+      <div class="cert-title">CERTIFICATE</div>
+      <div class="cert-sub">OF ACHIEVEMENT</div>
+      <div class="cert-body">
+        This certificate is proudly presented to
+        <div class="cert-name" id="certName">Student</div>
+        for successfully completing the lesson
+        <div style="font-family:'Bungee',sans-serif;font-size:22px;color:#E8A317;margin-top:8px" id="certLesson">Lesson</div>
+      </div>
+      <div class="cert-details">
+        <div class="cert-detail">GOALS SCORED<span class="v" id="certGoals">0</span></div>
+        <div class="cert-detail">ACCURACY<span class="v" id="certAcc">0%</span></div>
+        <div class="cert-detail">FINAL RANK<span class="v" id="certRank">1st</span></div>
+      </div>
+      <div class="cert-sign">
+        <div class="cert-sign-block">
+          <div class="cert-sign-line"></div>
+          <div class="cert-sign-name">Mr. Akram</div>
+          <div class="cert-sign-role">MATH INSTRUCTOR</div>
+        </div>
+        <div class="cert-sign-block">
+          <div class="cert-sign-line"></div>
+          <div class="cert-sign-role">DATE</div>
+          <div style="font-family:'Caveat',cursive;font-size:24px;color:#1a1100" id="certDate"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="cheerToast" class="cheer-toast"></div>
+
+<script>
+/* ============================================================
+   AID MATH ADVENTURE - By Mr. Akram
+============================================================ */
+
+/* ---------- AUDIO ---------- */
+var audioCtx = null;
+function ensureAudio(){
+  if(!audioCtx){
+    try{ audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }catch(e){}
+  }
+  if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+}
+function tone(freq, start, dur, type, vol){
+  type = type || 'sine';
+  vol = vol || 0.2;
+  if(!audioCtx) return;
+  var o = audioCtx.createOscillator();
+  var g = audioCtx.createGain();
+  o.type = type;
+  o.frequency.setValueAtTime(freq, audioCtx.currentTime + start);
+  g.gain.setValueAtTime(0, audioCtx.currentTime + start);
+  g.gain.linearRampToValueAtTime(vol, audioCtx.currentTime + start + 0.02);
+  g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + start + dur);
+  o.connect(g); g.connect(audioCtx.destination);
+  o.start(audioCtx.currentTime + start);
+  o.stop(audioCtx.currentTime + start + dur);
+}
+function playGoal(){
+  ensureAudio();
+  tone(523.25, 0, 0.18, 'triangle', 0.25);
+  tone(659.25, 0.12, 0.18, 'triangle', 0.25);
+  tone(783.99, 0.24, 0.18, 'triangle', 0.25);
+  tone(1046.5, 0.36, 0.4, 'triangle', 0.3);
+  noiseBurst(0.5, 0.15, 0.4);
+}
+function playSave(){
+  ensureAudio();
+  tone(220, 0, 0.25, 'sawtooth', 0.2);
+  tone(180, 0.1, 0.3, 'sawtooth', 0.2);
+  tone(120, 0.25, 0.4, 'sawtooth', 0.18);
+}
+function playClick(){
+  ensureAudio();
+  tone(800, 0, 0.05, 'square', 0.08);
+}
+function playPop(){
+  ensureAudio();
+  tone(900, 0, 0.05, 'square', 0.15);
+  tone(600, 0.04, 0.06, 'square', 0.12);
+}
+function playWin(){
+  ensureAudio();
+  var notes = [523, 659, 784, 1046];
+  for(var i = 0; i < notes.length; i++){
+    tone(notes[i], i * 0.12, 0.3, 'triangle', 0.25);
+  }
+}
+function noiseBurst(start, vol, dur){
+  if(!audioCtx) return;
+  var bufferSize = audioCtx.sampleRate * dur;
+  var buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+  var data = buffer.getChannelData(0);
+  for(var i = 0; i < bufferSize; i++){
+    data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 2);
+  }
+  var src = audioCtx.createBufferSource();
+  src.buffer = buffer;
+  var g = audioCtx.createGain();
+  g.gain.value = vol;
+  src.connect(g); g.connect(audioCtx.destination);
+  src.start(audioCtx.currentTime + start);
+}
+
+/* ---------- STATE ---------- */
+var state = {
+  name: '',
+  topicId: null,
+  lessonId: null,
+  qIndex: 0,
+  goals: 0,
+  misses: 0,
+  answered: [],
+  expPage: 0,
+  miniGamesPlayed: 0
+};
+
+/* ---------- DATA ---------- */
+var TOPICS = [
+  {
+    id: 2,
+    title: "Analyze and Use Proportional Relationships",
+    icon: "fa-solid fa-scale-balanced",
+    desc: "Ratios, rates, unit rates, and proportional reasoning.",
+    lessons: [
+      {id: "2-1", title: "Connect Ratios, Rates, and Unit Rates"},
+      {id: "2-2", title: "Determine Unit Rates with Ratios of Fractions"},
+      {id: "2-3", title: "Understand Proportional Relationships: Equivalent Ratios"},
+      {id: "2-4", title: "Describe Proportional Relationships: Constant of Proportionality"},
+      {id: "2-5", title: "Graph Proportional Relationships"},
+      {id: "2-6", title: "Apply Proportional Reasoning to Solve Problems"}
+    ]
+  },
+  {
+    id: 3,
+    title: "Analyze and Solve Percent Problems",
+    icon: "fa-solid fa-percent",
+    desc: "Percents, percent equations, change, markup, markdown, and interest.",
+    lessons: [
+      {id: "3-1", title: "Analyze Percents of Numbers"},
+      {id: "3-2", title: "Connect Percent and Proportion"},
+      {id: "3-3", title: "Represent and Use the Percent Equation"},
+      {id: "3-4", title: "Solve Percent Change and Percent Error Problems"},
+      {id: "3-5", title: "Solve Markup and Markdown Problems"},
+      {id: "3-6", title: "Solve Simple Interest Problems"}
+    ]
+  }
+];
+
+var LESSONS_DATA = {
+  "2-1": {
+    title: "Connect Ratios, Rates, and Unit Rates",
+    pages: [
+      {
+        title: "What is a Ratio?",
+        body: '<p class="exp-line">A <span class="hl">ratio</span> compares two amounts. If you have 3 red apples and 5 green apples, the ratio of red to green is <span class="hl-g">3 to 5</span>.</p><p class="exp-line">We can write a ratio three ways:</p><div class="visual-row"><div class="viz-card"><div class="big">3:5</div><div class="lbl">colon form</div></div><div class="viz-card"><div class="big">3 to 5</div><div class="lbl">word form</div></div><div class="viz-card"><div class="big">3/5</div><div class="lbl">fraction form</div></div></div><p class="exp-line">To <span class="hl-o">simplify</span> a ratio, divide both numbers by the same value. Example: 6:8 <span class="hl-g">= 3:4</span> (divide both by 2).</p>'
+      },
+      {
+        title: "Rates and Unit Rates",
+        body: '<p class="exp-line">A <span class="hl">rate</span> compares two things with different units, like 60 miles in 3 hours.</p><p class="exp-line">A <span class="hl-o">unit rate</span> tells you the amount for <span class="hl">ONE</span> thing.</p><div class="visual-row"><div class="viz-card"><div class="big">60 mi / 3 hr</div><div class="lbl">total</div></div><div class="viz-card"><div class="big">20 mph</div><div class="lbl">unit rate</div></div></div><p class="exp-line">Just <span class="hl-g">DIVIDE</span> to find the unit rate: 60 / 3 = <span class="hl-g">20 miles per hour</span>.</p>'
+      }
+    ],
+    questions: [
+      {q:"A basket has 6 oranges and 9 apples. What is the ratio of oranges to apples in simplest form?",choices:["2:3","3:2","6:9","9:6"],correct:0,hint:"Divide both numbers by their GCF.",steps:["GCF of 6 and 9 is 3.","6 / 3 = 2, 9 / 3 = 3.","Simplest form: 2:3."],answer:"2:3"},
+      {q:"A store sells 8 pencils for $4.00. What is the unit rate (price per pencil)?",choices:["$0.50","$0.25","$1.00","$2.00"],correct:0,hint:"Divide total price by number of pencils.",steps:["$4.00 / 8 pencils.","= $0.50 per pencil."],answer:"$0.50 per pencil"},
+      {q:"A car travels 240 miles in 4 hours. What is the unit rate (miles per hour)?",choices:["50 mph","60 mph","40 mph","70 mph"],correct:1,hint:"Divide miles by hours.",steps:["240 / 4 = 60.","Unit rate = 60 mph."],answer:"60 mph"},
+      {q:"In a class, 15 students like soccer and 10 like basketball. What is the ratio of soccer fans to total students?",choices:["3:5","3:2","15:25","1:2"],correct:0,hint:"Total = 15 + 10 = 25. Then simplify 15:25.",steps:["Total = 15 + 10 = 25.","Ratio = 15:25.","Divide both by 5: 3:5."],answer:"3:5"},
+      {q:"A recipe uses 2 cups of flour for 3 cups of sugar. What is the ratio of flour to sugar?",choices:["2:3","3:2","5:2","2:5"],correct:0,hint:"Flour comes first, sugar second.",steps:["Flour = 2, Sugar = 3.","Ratio = 2:3."],answer:"2:3"},
+      {q:"If 5 notebooks cost $15, how much does 1 notebook cost?",choices:["$3","$2","$4","$5"],correct:0,hint:"Divide total cost by 5.",steps:["$15 / 5 = $3.","$3 per notebook."],answer:"$3"},
+      {q:"A runner jogs 12 miles in 3 hours. What is the unit rate?",choices:["4 mph","3 mph","6 mph","5 mph"],correct:0,hint:"Divide miles by hours.",steps:["12 / 3 = 4.","4 miles per hour."],answer:"4 mph"},
+      {q:"There are 20 boys and 30 girls in a club. What is the ratio of boys to girls in simplest form?",choices:["2:3","3:2","20:30","1:2"],correct:0,hint:"Divide both by 10.",steps:["20:30 -> divide both by 10.","= 2:3."],answer:"2:3"},
+      {q:"A pack of 6 juice boxes costs $3.60. What is the cost per juice box?",choices:["$0.60","$0.50","$0.70","$0.80"],correct:0,hint:"Divide total cost by 6.",steps:["$3.60 / 6 = $0.60.","$0.60 per juice box."],answer:"$0.60"},
+      {q:"A printer prints 120 pages in 4 minutes. How many pages per minute?",choices:["30","20","40","25"],correct:0,hint:"Divide total pages by minutes.",steps:["120 / 4 = 30.","30 pages per minute."],answer:"30 pages/min"},
+      {q:"A bag has 4 red, 6 blue, and 10 green marbles. What is the ratio of red to total marbles?",choices:["1:5","2:5","4:10","4:20"],correct:0,hint:"Total = 4+6+10 = 20. Then simplify 4:20.",steps:["Total = 4+6+10 = 20.","Ratio = 4:20 = 1:5."],answer:"1:5"},
+      {q:"Which is the better buy: 3 shirts for $21 or 5 shirts for $30?",choices:["5 shirts for $30","3 shirts for $21","Both the same","Cannot tell"],correct:0,hint:"Find the unit price for each option.",steps:["Option 1: $21/3 = $7 each.","Option 2: $30/5 = $6 each.","$6 is cheaper."],answer:"5 shirts for $30"},
+      {q:"A cyclist rides 45 miles in 3 hours. What is the unit rate?",choices:["15 mph","12 mph","18 mph","20 mph"],correct:0,hint:"Divide miles by hours.",steps:["45 / 3 = 15.","15 miles per hour."],answer:"15 mph"},
+      {q:"In a survey, 18 out of 50 students prefer math. What is the ratio in simplest form?",choices:["9:25","18:50","9:50","18:25"],correct:0,hint:"Divide both by GCF.",steps:["GCF of 18 and 50 is 2.","18/2 = 9, 50/2 = 25.","= 9:25."],answer:"9:25"},
+      {q:"A bakery sells 24 muffins in 6 hours. What is the unit rate?",choices:["4 muffins/hour","3 muffins/hour","5 muffins/hour","6 muffins/hour"],correct:0,hint:"Divide muffins by hours.",steps:["24 / 6 = 4.","4 muffins per hour."],answer:"4 muffins/hour"}
+    ]
+  },
+  "2-2": {
+    title: "Determine Unit Rates with Ratios of Fractions",
+    pages: [
+      {
+        title: "Unit Rates with Fractions",
+        body: '<p class="exp-line">Sometimes the numbers are <span class="hl">fractions</span>. Example: You walk <span class="hl-g">1/2 mile</span> in <span class="hl-o">1/4 hour</span>.</p><p class="exp-line">Speed = (1/2) / (1/4).</p><div class="visual-row"><div class="viz-card"><div class="big">KEEP</div><div class="lbl">first fraction</div></div><div class="viz-card"><div class="big">CHANGE</div><div class="lbl">/ to x</div></div><div class="viz-card"><div class="big">FLIP</div><div class="lbl">second fraction</div></div></div><p class="exp-line">So (1/2) x (4/1) = <span class="hl-g">4/2 = 2 miles per hour</span>.</p>'
+      },
+      {
+        title: "The Flip Trick",
+        body: '<p class="exp-line">Dividing by a fraction? <span class="hl">Flip</span> the second fraction and <span class="hl">multiply</span>!</p><p class="exp-line">Example: (3/4) / (1/2)</p><div class="visual-row"><div class="viz-card"><div class="big">3/4</div><div class="lbl">keep</div></div><div class="viz-card"><div class="big">x</div><div class="lbl">change</div></div><div class="viz-card"><div class="big">2/1</div><div class="lbl">flip</div></div><div class="viz-card"><div class="big">= 6/4 = 1 1/2</div><div class="lbl">answer</div></div></div><p class="exp-line">Remember: <span class="hl-g">KEEP - CHANGE - FLIP</span>!</p>'
+      }
+    ],
+    questions: [
+      {q:"A snail crawls 1/2 meter in 1/4 hour. What is the unit rate in meters per hour?",choices:["2 m/h","1 m/h","1/8 m/h","3/4 m/h"],correct:0,hint:"Divide distance by time: (1/2) / (1/4) = multiply by reciprocal.",steps:["(1/2) / (1/4).","= (1/2) x (4/1).","= 4/2 = 2 m/h."],answer:"2 meters per hour"},
+      {q:"A recipe uses 3/4 cup sugar for every 1/2 cup flour. What is the unit rate of sugar per cup of flour?",choices:["3/2 cups","2/3 cups","3/8 cups","1 1/3 cups"],correct:0,hint:"Divide sugar by flour: (3/4) / (1/2).",steps:["(3/4) / (1/2).","= (3/4) x (2/1).","= 6/4 = 3/2 = 1 1/2 cups."],answer:"3/2 cups sugar per cup flour"},
+      {q:"You read 2/3 of a book in 1/6 of an hour. How many books per hour?",choices:["4 books/hour","2 books/hour","1/4 books/hour","3 books/hour"],correct:0,hint:"Divide (2/3) by (1/6).",steps:["(2/3) / (1/6).","= (2/3) x (6/1).","= 12/3 = 4 books/hour."],answer:"4 books per hour"},
+      {q:"A pipe fills 1/3 of a tank in 1/2 hour. What is the unit rate in tanks per hour?",choices:["2/3 tank/hour","1/6 tank/hour","1 tank/hour","3/2 tanks/hour"],correct:0,hint:"Divide (1/3) by (1/2).",steps:["(1/3) / (1/2).","= (1/3) x (2/1).","= 2/3 tank per hour."],answer:"2/3 tank per hour"},
+      {q:"A gardener plants 1/4 of a garden in 1/8 hour. What is the unit rate?",choices:["2 gardens/hour","1/2 garden/hour","1/32 garden/hour","3 gardens/hour"],correct:0,hint:"Divide (1/4) by (1/8).",steps:["(1/4) / (1/8).","= (1/4) x (8/1).","= 8/4 = 2 gardens/hour."],answer:"2 gardens per hour"},
+      {q:"Simplify the complex fraction: (2/3) / (1/6)",choices:["4","1/4","2/18","12/3"],correct:0,hint:"Multiply by the reciprocal of the denominator.",steps:["(2/3) x (6/1).","= 12/3 = 4."],answer:"4"},
+      {q:"A baker uses 1/2 pound of butter for 1/3 batch of cookies. How much butter per full batch?",choices:["1 1/2 pounds","1/6 pound","2/3 pound","3 pounds"],correct:0,hint:"Divide butter by batch: (1/2) / (1/3).",steps:["(1/2) / (1/3).","= (1/2) x (3/1).","= 3/2 = 1 1/2 pounds."],answer:"1 1/2 pounds per batch"},
+      {q:"A hose fills 3/4 of a pool in 1/2 hour. What is the unit rate?",choices:["1 1/2 pools/hour","3/8 pool/hour","2/3 pool/hour","5/4 pools/hour"],correct:0,hint:"Divide (3/4) by (1/2).",steps:["(3/4) / (1/2).","= (3/4) x (2/1).","= 6/4 = 3/2 = 1 1/2 pools/hour."],answer:"1 1/2 pools per hour"},
+      {q:"Simplify: (1/4) / (1/8)",choices:["2","1/2","1/32","2/8"],correct:0,hint:"Multiply by reciprocal.",steps:["(1/4) x (8/1).","= 8/4 = 2."],answer:"2"},
+      {q:"A worker completes 2/5 of a job in 1/10 hour. What is the unit rate (jobs per hour)?",choices:["4 jobs/hour","1/25 job/hour","1/5 job/hour","2 jobs/hour"],correct:0,hint:"Divide (2/5) by (1/10).",steps:["(2/5) / (1/10).","= (2/5) x (10/1).","= 20/5 = 4 jobs/hour."],answer:"4 jobs per hour"},
+      {q:"A car uses 3/4 gallon of gas in 1/8 hour. What is the unit rate?",choices:["6 gallons/hour","3/32 gallon/hour","2/3 gallon/hour","3 gallons/hour"],correct:0,hint:"Divide (3/4) by (1/8).",steps:["(3/4) / (1/8).","= (3/4) x (8/1).","= 24/4 = 6 gallons/hour."],answer:"6 gallons per hour"},
+      {q:"Simplify: (3/5) / (2/5)",choices:["3/2","2/3","6/25","5/5"],correct:0,hint:"Multiply by reciprocal of denominator.",steps:["(3/5) x (5/2).","= 15/10 = 3/2."],answer:"3/2"},
+      {q:"A painter covers 1/2 wall in 1/3 hour. What is the unit rate in walls per hour?",choices:["3/2 walls/hour","1/6 wall/hour","2/3 wall/hour","3 walls/hour"],correct:0,hint:"Divide (1/2) by (1/3).",steps:["(1/2) / (1/3).","= (1/2) x (3/1).","= 3/2 = 1 1/2 walls/hour."],answer:"3/2 walls per hour"},
+      {q:"A faucet drips 1/2 cup in 1/4 hour. How many cups per hour?",choices:["2 cups/hour","1 cup/hour","1/8 cup/hour","3/4 cup/hour"],correct:0,hint:"Divide (1/2) by (1/4).",steps:["(1/2) / (1/4).","= (1/2) x (4/1).","= 4/2 = 2 cups/hour."],answer:"2 cups per hour"},
+      {q:"Simplify: (5/6) / (1/3)",choices:["5/2","5/18","2/5","3/6"],correct:0,hint:"Multiply by reciprocal.",steps:["(5/6) x (3/1).","= 15/6 = 5/2."],answer:"5/2"}
+    ]
+  },
+  "2-3": {
+    title: "Understand Proportional Relationships: Equivalent Ratios",
+    pages: [
+      {
+        title: "Equivalent Ratios",
+        body: '<p class="exp-line"><span class="hl">Equivalent ratios</span> are ratios that represent the same comparison.</p><div class="visual-row"><div class="viz-card"><div class="big">2:3</div><div class="lbl">original</div></div><div class="viz-card"><div class="big">4:6</div><div class="lbl">x2 both</div></div><div class="viz-card"><div class="big">6:9</div><div class="lbl">x3 both</div></div></div><p class="exp-line">Multiply or divide <span class="hl-g">BOTH</span> numbers by the same value.</p><p class="exp-line">Example: 2:3 <span class="hl-o">x 2 = 4:6</span> ✓</p>'
+      },
+      {
+        title: "Proportions",
+        body: '<p class="exp-line">A <span class="hl">proportion</span> says two ratios are equal: <span class="hl-g">2/3 = 4/6</span>.</p><p class="exp-line">To solve, use <span class="hl-o">CROSS MULTIPLY</span>: multiply diagonally!</p><div class="visual-row"><div class="viz-card"><div class="big">2 x 6</div><div class="lbl">= 12</div></div><div class="viz-card"><div class="big">3 x 4</div><div class="lbl">= 12</div></div><div class="viz-card"><div class="big">12 = 12 ✓</div><div class="lbl">proportion!</div></div></div><p class="exp-line">Example: If 3 apples cost $1.50, then 9 apples cost $? -> 3/1.50 = 9/x -> 3x = 13.50 -> x = <span class="hl-g">$4.50</span></p>'
+      }
+    ],
+    questions: [
+      {q:"Which ratio is equivalent to 3:4?",choices:["6:8","3:5","4:3","5:6"],correct:0,hint:"Multiply or divide both numbers by the same value.",steps:["3:4 x 2 = 6:8.","Both terms multiplied by 2."],answer:"6:8"},
+      {q:"Solve the proportion: 2/5 = x/20",choices:["8","5","10","4"],correct:0,hint:"Cross multiply: 2 x 20 = 5 x x.",steps:["2 x 20 = 5x.","40 = 5x.","x = 8."],answer:"x = 8"},
+      {q:"If 3 apples cost $1.50, how much do 9 apples cost?",choices:["$4.50","$3.00","$6.00","$7.50"],correct:0,hint:"Set up proportion: 3/1.50 = 9/x.",steps:["3/1.50 = 9/x.","3x = 13.50.","x = $4.50."],answer:"$4.50"},
+      {q:"Which pair of ratios forms a proportion?",choices:["2:3 and 4:6","2:3 and 3:4","1:2 and 2:3","3:5 and 4:6"],correct:0,hint:"Cross multiply to check if equal.",steps:["2 x 6 = 12.","3 x 4 = 12.","Equal, so it's a proportion."],answer:"2:3 and 4:6"},
+      {q:"Solve: 4/7 = 12/x",choices:["21","14","28","35"],correct:0,hint:"Cross multiply: 4x = 7 x 12.",steps:["4x = 7 x 12.","4x = 84.","x = 21."],answer:"x = 21"},
+      {q:"A map scale is 1 inch = 50 miles. If two cities are 3 inches apart on the map, how far apart are they?",choices:["150 miles","100 miles","200 miles","250 miles"],correct:0,hint:"Set up proportion: 1/50 = 3/x.",steps:["1/50 = 3/x.","x = 3 x 50.","x = 150 miles."],answer:"150 miles"},
+      {q:"Complete the equivalent ratio: 5:8 = ?:16",choices:["10","8","12","15"],correct:0,hint:"16 / 8 = 2, so multiply 5 by 2.",steps:["16 / 8 = 2.","5 x 2 = 10.","5:8 = 10:16."],answer:"10"},
+      {q:"Solve the proportion: 6/x = 18/24",choices:["8","6","10","12"],correct:0,hint:"Cross multiply: 6 x 24 = 18x.",steps:["6 x 24 = 18x.","144 = 18x.","x = 8."],answer:"x = 8"},
+      {q:"If 4 workers can build a wall in 10 days, how many days for 8 workers (inverse)?",choices:["5 days","10 days","15 days","20 days"],correct:0,hint:"More workers = less time. Inverse proportion: 4 x 10 = 8 x x.",steps:["4 x 10 = 8x.","40 = 8x.","x = 5 days."],answer:"5 days"},
+      {q:"Which ratio is NOT equivalent to 1:3?",choices:["3:6","2:6","3:9","4:12"],correct:0,hint:"Check each by simplifying.",steps:["2:6 = 1:3 ✓","3:9 = 1:3 ✓","4:12 = 1:3 ✓","3:6 = 1:2 ✗"],answer:"3:6"},
+      {q:"Solve: x/9 = 4/12",choices:["3","2","4","6"],correct:0,hint:"Simplify 4/12 first, then solve.",steps:["4/12 = 1/3.","x/9 = 1/3.","x = 3."],answer:"x = 3"},
+      {q:"A recipe for 4 people uses 2 cups of rice. How much rice for 10 people?",choices:["5 cups","4 cups","6 cups","8 cups"],correct:0,hint:"Set up: 4/2 = 10/x.",steps:["4/2 = 10/x.","4x = 20.","x = 5 cups."],answer:"5 cups"},
+      {q:"Solve the proportion: 9/15 = 3/x",choices:["5","3","9","15"],correct:0,hint:"Cross multiply: 9x = 15 x 3.",steps:["9x = 15 x 3.","9x = 45.","x = 5."],answer:"x = 5"},
+      {q:"Which fraction is equivalent to 6/9?",choices:["2/3","3/4","4/5","3/5"],correct:0,hint:"Simplify 6/9 by dividing by GCF.",steps:["GCF of 6 and 9 is 3.","6/9 = 2/3."],answer:"2/3"},
+      {q:"If 5 pizzas serve 20 students, how many pizzas for 36 students?",choices:["9","7","8","10"],correct:0,hint:"Set up: 5/20 = x/36.",steps:["5/20 = 1/4.","x/36 = 1/4.","x = 9 pizzas."],answer:"9 pizzas"}
+    ]
+  },
+  "2-4": {
+    title: "Describe Proportional Relationships: Constant of Proportionality",
+    pages: [
+      {
+        title: "What is the Constant of Proportionality?",
+        body: '<p class="exp-line">In a proportional relationship, the ratio y/x is <span class="hl">always the same</span>. This constant is called <span class="hl-o">k</span>.</p><p class="exp-line">Formula: <span class="hl-g">k = y / x</span></p><div class="visual-row"><div class="viz-card"><div class="big">y = 12</div><div class="lbl">when</div></div><div class="viz-card"><div class="big">x = 3</div><div class="lbl">then</div></div><div class="viz-card"><div class="big">k = 4</div><div class="lbl">12 / 3</div></div></div><p class="exp-line">So the equation is <span class="hl">y = 4x</span>.</p>'
+      },
+      {
+        title: "The Equation y = kx",
+        body: '<p class="exp-line">Every proportional relationship follows <span class="hl">y = kx</span>.</p><p class="exp-line">Example: if <span class="hl-g">k = 3</span> (each item costs $3), then 5 items cost:</p><div class="visual-row"><div class="viz-card"><div class="big">y = 3 x 5</div><div class="lbl">plug in</div></div><div class="viz-card"><div class="big">= $15</div><div class="lbl">answer</div></div></div><p class="exp-line">Find <span class="hl-o">k first</span>, then plug in to find any value!</p>'
+      }
+    ],
+    questions: [
+      {q:"If y = 12 when x = 3, what is the constant of proportionality k?",choices:["4","3","9","15"],correct:0,hint:"Use k = y/x.",steps:["k = 12/3.","k = 4."],answer:"k = 4"},
+      {q:"In the equation y = 5x, what is the constant of proportionality?",choices:["5","1","x","y"],correct:0,hint:"In y = kx, k is the constant.",steps:["y = kx.","y = 5x means k = 5."],answer:"k = 5"},
+      {q:"A table shows x: 2, 4, 6 and y: 6, 12, 18. What is k?",choices:["3","2","4","6"],correct:0,hint:"Divide any y by its x.",steps:["k = 6/2 = 3.","Check: 12/4 = 3, 18/6 = 3.","k = 3."],answer:"k = 3"},
+      {q:"If 4 cupcakes cost $8, what is the constant of proportionality?",choices:["$2","$1","$4","$8"],correct:0,hint:"k = cost / number of cupcakes.",steps:["k = 8/4.","k = $2 per cupcake."],answer:"k = $2"},
+      {q:"Given y = 3x, find y when x = 7.",choices:["21","14","24","10"],correct:0,hint:"Substitute x = 7 into y = 3x.",steps:["y = 3 x 7.","y = 21."],answer:"y = 21"},
+      {q:"If y = 24 when x = 8, find y when x = 5.",choices:["15","10","12","20"],correct:0,hint:"First find k, then use y = kx.",steps:["k = 24/8 = 3.","y = 3 x 5 = 15."],answer:"y = 15"},
+      {q:"Which equation represents a proportional relationship with k = 6?",choices:["y = 6x","y = x + 6","y = 6/x","y = 6 - x"],correct:0,hint:"Proportional relationships have form y = kx.",steps:["y = kx.","k = 6 means y = 6x."],answer:"y = 6x"},
+      {q:"A car uses gas at a rate of k = 2 gallons per hour. How much gas for 5 hours?",choices:["10 gallons","7 gallons","12 gallons","5 gallons"],correct:0,hint:"Use y = kx with k = 2, x = 5.",steps:["y = 2 x 5.","y = 10 gallons."],answer:"10 gallons"},
+      {q:"If y = 15 when x = 5, what is the equation for this proportional relationship?",choices:["y = 3x","y = 2x","y = 5x","y = 15x"],correct:0,hint:"Find k = y/x first.",steps:["k = 15/5 = 3.","Equation: y = 3x."],answer:"y = 3x"},
+      {q:"In a proportional relationship, if k = 4 and y = 20, find x.",choices:["5","4","16","24"],correct:0,hint:"Use y = kx, solve for x.",steps:["20 = 4x.","x = 20/4 = 5."],answer:"x = 5"},
+      {q:"A worker earns $15 per hour. How much for 6 hours? (Find k first)",choices:["$90","$75","$60","$105"],correct:0,hint:"k = 15 (dollars per hour), use y = 15x.",steps:["k = 15.","y = 15 x 6 = $90."],answer:"$90"},
+      {q:"Table: x = 3, y = 9; x = 5, y = 15; x = 8, y = ?. Find missing y.",choices:["24","18","21","27"],correct:0,hint:"Find k first, then use it.",steps:["k = 9/3 = 3.","y = 3 x 8 = 24."],answer:"y = 24"},
+      {q:"Which is NOT a proportional relationship?",choices:["y = x + 2","y = 4x","y = 0.5x","y = 7x"],correct:0,hint:"Proportional relationships must pass through origin (0,0).",steps:["y = x + 2 has + 2.","Does not pass through (0,0).","Not proportional."],answer:"y = x + 2"},
+      {q:"If k = 0.25 and x = 16, find y.",choices:["4","2","8","16"],correct:0,hint:"Use y = kx.",steps:["y = 0.25 x 16.","y = 4."],answer:"y = 4"},
+      {q:"Distance = 45 miles in 3 hours. Using k = d/t, find distance for 7 hours.",choices:["105 miles","90 miles","120 miles","135 miles"],correct:0,hint:"Find k = 45/3, then use d = kt.",steps:["k = 45/3 = 15.","d = 15 x 7 = 105 miles."],answer:"105 miles"}
+    ]
+  },
+  "2-5": {
+    title: "Graph Proportional Relationships",
+    pages: [
+      {
+        title: "Graphing Proportional Relationships",
+        body: '<p class="exp-line">A proportional relationship (<span class="hl">y = kx</span>) always makes a <span class="hl-g">straight line</span> through the origin <span class="hl">(0,0)</span>.</p><p class="exp-line">Example: y = 3x passes through:</p><div class="visual-row"><div class="viz-card"><div class="big">(0,0)</div><div class="lbl">origin</div></div><div class="viz-card"><div class="big">(1,3)</div><div class="lbl">x=1</div></div><div class="viz-card"><div class="big">(2,6)</div><div class="lbl">x=2</div></div><div class="viz-card"><div class="big">(3,9)</div><div class="lbl">x=3</div></div></div><p class="exp-line">The <span class="hl-o">slope</span> of the line = k.</p>'
+      },
+      {
+        title: "Reading Graphs",
+        body: '<p class="exp-line">Each point on the line shows a pair <span class="hl">(x, y)</span>.</p><p class="exp-line">If a point is (4, 12), then when x = 4, y = 12.</p><p class="exp-line">The slope <span class="hl-g">k = 12 / 4 = 3</span>.</p><p class="exp-line"><span class="hl-o">Steeper line = bigger k!</span></p>'
+      }
+    ],
+    questions: [
+      {q:"A proportional relationship graph always passes through which point?",choices:["(0,0)","(0,1)","(1,0)","(1,1)"],correct:0,hint:"When x = 0, what is y in y = kx?",steps:["In y = kx.","When x = 0, y = 0.","Passes through (0,0)."],answer:"(0,0)"},
+      {q:"If y = 2x, which point is on the graph?",choices:["(2,4)","(1,1)","(3,5)","(4,6)"],correct:0,hint:"Check if y = 2x for each point.",steps:["Check (2,4): 4 = 2 x 2 ✓.","This point is on the line."],answer:"(2,4)"},
+      {q:"A line passes through (0,0) and (3,9). What is k (the slope)?",choices:["3","6","9","12"],correct:0,hint:"k = y/x for any point on the line.",steps:["k = 9/3.","k = 3."],answer:"k = 3"},
+      {q:"Which graph represents y = 4x?",choices:["Line through (0,0) and (1,4)","Line through (0,4) and (1,0)","Line through (0,0) and (1,1)","Line through (0,0) and (4,0)"],correct:0,hint:"For y = 4x, when x = 1, y = 4.",steps:["y = 4x.","When x = 1, y = 4.","Passes through (0,0) and (1,4)."],answer:"Line through (0,0) and (1,4)"},
+      {q:"If a point (5, 15) is on the graph of y = kx, what is k?",choices:["3","2","5","10"],correct:0,hint:"Use k = y/x.",steps:["k = 15/5.","k = 3."],answer:"k = 3"},
+      {q:"A proportional graph passes through (2, 6). Find y when x = 7.",choices:["21","14","18","24"],correct:0,hint:"Find k first, then use y = kx.",steps:["k = 6/2 = 3.","y = 3 x 7 = 21."],answer:"y = 21"},
+      {q:"Which statement is true about proportional relationship graphs?",choices:["They are straight lines through the origin","They are curved","They have negative slope","They are vertical lines"],correct:0,hint:"Think about what y = kx looks like.",steps:["y = kx is linear.","Passes through (0,0).","Straight line through origin."],answer:"Straight lines through the origin"},
+      {q:"If k = 5, which point is on the graph of y = 5x?",choices:["(2,10)","(1,4)","(3,12)","(4,16)"],correct:0,hint:"y should equal 5 times x.",steps:["Check (2,10): 10 = 5 x 2 ✓."],answer:"(2,10)"},
+      {q:"A graph passes through (0,0) and (4, 20). Find y when x = 6.",choices:["30","24","26","36"],correct:0,hint:"Find k = 20/4, then y = k x 6.",steps:["k = 20/4 = 5.","y = 5 x 6 = 30."],answer:"y = 30"},
+      {q:"Which does NOT represent a proportional relationship on a graph?",choices:["Line through (0,2) and (2,4)","Line through origin with positive slope","Line through origin with negative slope","Line through (0,0) and (2,4)"],correct:0,hint:"Proportional lines must pass through origin.",steps:["Line through (0,2) does NOT pass through (0,0).","Not proportional."],answer:"Line through (0,2) and (2,4)"},
+      {q:"On the graph of y = 3x, what is the y-coordinate when x = 5?",choices:["15","8","12","18"],correct:0,hint:"Substitute x = 5 into y = 3x.",steps:["y = 3 x 5.","y = 15."],answer:"y = 15"},
+      {q:"A point (6, 18) is on line y = kx. What is the slope?",choices:["3","2","6","12"],correct:0,hint:"Slope = k = y/x.",steps:["k = 18/6.","k = 3."],answer:"k = 3"},
+      {q:"If y = 7x, find the y-value when x = 0.",choices:["0","1","7","14"],correct:0,hint:"What happens when x = 0?",steps:["y = 7 x 0.","y = 0.","Passes through origin."],answer:"y = 0"},
+      {q:"Two points on a proportional graph are (1, 4) and (3, y). Find y.",choices:["12","8","10","14"],correct:0,hint:"Find k from first point, then use it.",steps:["k = 4/1 = 4.","y = 4 x 3 = 12."],answer:"y = 12"},
+      {q:"A proportional graph has k = 0.5. Find y when x = 8.",choices:["4","2","6","8"],correct:0,hint:"Use y = kx.",steps:["y = 0.5 x 8.","y = 4."],answer:"y = 4"}
+    ]
+  },
+  "2-6": {
+    title: "Apply Proportional Reasoning to Solve Problems",
+    pages: [
+      {
+        title: "Using Proportions in Real Life",
+        body: '<p class="exp-line">Proportional reasoning helps us solve many real-world problems!</p><p class="exp-line"><span class="hl">Steps:</span></p><p class="exp-line">1. <span class="hl-g">Identify</span> what you know and what you need.</p><p class="exp-line">2. <span class="hl-g">Set up</span> a proportion.</p><p class="exp-line">3. <span class="hl-g">Cross multiply</span> to solve.</p><p class="exp-line">Example: 3 boxes weigh 12 lbs, how much do 7 boxes weigh? -> 3/12 = 7/x -> 3x = 84 -> x = <span class="hl-o">28 lbs</span></p>'
+      },
+      {
+        title: "Map Scale Example",
+        body: '<p class="exp-line">A map scale: <span class="hl">1 inch = 50 miles</span>.</p><p class="exp-line">If two cities are <span class="hl-g">3 inches</span> apart on the map, they are <span class="hl-g">3 x 50 = 150 miles</span> apart in real life.</p><div class="visual-row"><div class="viz-card"><div class="big">1 in</div><div class="lbl">= 50 mi</div></div><div class="viz-card"><div class="big">3 in</div><div class="lbl">on map</div></div><div class="viz-card"><div class="big">150 mi</div><div class="lbl">real</div></div></div><p class="exp-line">Set up: 1/50 = 3/x, solve for x.</p>'
+      }
+    ],
+    questions: [
+      {q:"A scale drawing uses 1 cm = 5 m. If a building is 8 cm on the drawing, how tall is it?",choices:["40 m","13 m","30 m","50 m"],correct:0,hint:"Set up: 1/5 = 8/x.",steps:["1/5 = 8/x.","x = 5 x 8 = 40 meters."],answer:"40 meters"},
+      {q:"If 3 workers finish a job in 8 hours, how long for 4 workers at the same rate (inverse)?",choices:["6 hours","4 hours","8 hours","12 hours"],correct:0,hint:"More workers = less time. 3 x 8 = 4 x x.",steps:["3 x 8 = 4x.","24 = 4x.","x = 6 hours."],answer:"6 hours"},
+      {q:"A recipe needs 2 cups of flour for 12 cookies. How much flour for 36 cookies?",choices:["6 cups","4 cups","8 cups","9 cups"],correct:0,hint:"Set up: 2/12 = x/36.",steps:["2/12 = x/36.","12x = 72.","x = 6 cups."],answer:"6 cups"},
+      {q:"A car travels 180 miles on 6 gallons of gas. How far on 10 gallons?",choices:["300 miles","240 miles","280 miles","320 miles"],correct:0,hint:"Find miles per gallon first.",steps:["k = 180/6 = 30 mpg.","Distance = 30 x 10 = 300 miles."],answer:"300 miles"},
+      {q:"On a map, 2 inches = 30 miles. Two cities are 7 inches apart. How far apart?",choices:["105 miles","85 miles","95 miles","115 miles"],correct:0,hint:"Set up: 2/30 = 7/x.",steps:["2/30 = 7/x.","2x = 210.","x = 105 miles."],answer:"105 miles"},
+      {q:"If 5 pens cost $7.50, how much do 8 pens cost?",choices:["$12","$10","$15","$18"],correct:0,hint:"Find unit price first.",steps:["k = 7.50/5 = $1.50 each.","8 x 1.50 = $12."],answer:"$12"},
+      {q:"A 3-foot shadow is cast by a 5-foot pole. A tree casts a 21-foot shadow. How tall?",choices:["35 feet","25 feet","30 feet","40 feet"],correct:0,hint:"Set up: 3/5 = 21/x.",steps:["3/5 = 21/x.","3x = 105.","x = 35 feet."],answer:"35 feet"},
+      {q:"If 4 pizzas cost $36, how much do 7 pizzas cost?",choices:["$63","$49","$56","$70"],correct:0,hint:"Find price per pizza.",steps:["k = 36/4 = $9.","7 x 9 = $63."],answer:"$63"},
+      {q:"A printer prints 90 pages in 3 minutes. How many pages in 10 minutes?",choices:["300","200","250","350"],correct:0,hint:"Find pages per minute.",steps:["k = 90/3 = 30 ppm.","30 x 10 = 300 pages."],answer:"300 pages"},
+      {q:"If 8 ounces of cheese cost $2.40, how much for 20 ounces?",choices:["$6.00","$4.80","$5.20","$6.40"],correct:0,hint:"Find price per ounce.",steps:["k = 2.40/8 = $0.30/oz.","20 x 0.30 = $6.00."],answer:"$6.00"},
+      {q:"A train travels 240 miles in 4 hours. At this rate, how far in 7 hours?",choices:["420 miles","350 miles","380 miles","450 miles"],correct:0,hint:"Find speed first.",steps:["k = 240/4 = 60 mph.","60 x 7 = 420 miles."],answer:"420 miles"},
+      {q:"If 6 gallons of paint cover 120 sq ft, how much paint for 300 sq ft?",choices:["15 gallons","10 gallons","12 gallons","18 gallons"],correct:0,hint:"Find coverage per gallon.",steps:["120/6 = 20 sq ft/gal.","300/20 = 15 gallons."],answer:"15 gallons"},
+      {q:"A recipe uses 3 eggs for 9 cupcakes. How many eggs for 24 cupcakes?",choices:["8","6","7","9"],correct:0,hint:"Set up proportion.",steps:["3/9 = x/24.","9x = 72.","x = 8 eggs."],answer:"8 eggs"},
+      {q:"If $15 buys 5 movie tickets, how much for 12 tickets?",choices:["$36","$24","$30","$42"],correct:0,hint:"Find price per ticket.",steps:["k = 15/5 = $3.","12 x 3 = $36."],answer:"$36"},
+      {q:"A bicycle travels 14 miles in 1 hour. How far in 3.5 hours?",choices:["49 miles","35 miles","42 miles","56 miles"],correct:0,hint:"Use distance = rate x time.",steps:["d = 14 x 3.5.","d = 49 miles."],answer:"49 miles"}
+    ]
+  },
+  "3-1": {
+    title: "Analyze Percents of Numbers",
+    pages: [
+      {
+        title: "What is a Percent?",
+        body: '<p class="exp-line">Percent means <span class="hl">out of 100</span>.</p><div class="visual-row"><div class="viz-card"><div class="big">25%</div><div class="lbl">= 25/100</div></div><div class="viz-card"><div class="big">= 0.25</div><div class="lbl">decimal</div></div><div class="viz-card"><div class="big">= 1/4</div><div class="lbl">fraction</div></div></div><p class="exp-line">To change percent to decimal: <span class="hl-o">divide by 100</span> (move decimal 2 spots left).</p><p class="exp-line">Example: <span class="hl-g">45% = 0.45</span></p>'
+      },
+      {
+        title: "Finding Percent of a Number",
+        body: '<p class="exp-line">To find a percent of a number:</p><p class="exp-line">1. <span class="hl">Change % to decimal</span></p><p class="exp-line">2. <span class="hl">Multiply</span></p><div class="visual-row"><div class="viz-card"><div class="big">25% of 80</div><div class="lbl">question</div></div><div class="viz-card"><div class="big">0.25 x 80</div><div class="lbl">change %</div></div><div class="viz-card"><div class="big">= 20</div><div class="lbl">answer!</div></div></div><p class="exp-line">Example: 10% of 250 = <span class="hl-g">0.10 x 250 = 25</span></p>'
+      }
+    ],
+    questions: [
+      {q:"What is 25% of 80?",choices:["20","15","25","30"],correct:0,hint:"Convert 25% to 0.25, then multiply.",steps:["25% = 0.25.","0.25 x 80 = 20."],answer:"20"},
+      {q:"Convert 45% to a decimal.",choices:["0.45","0.045","4.5","45.0"],correct:0,hint:"Divide by 100 (move decimal 2 places left).",steps:["45% = 45/100.","= 0.45."],answer:"0.45"},
+      {q:"What is 10% of 250?",choices:["25","15","20","30"],correct:0,hint:"10% = 0.10, multiply.",steps:["10% = 0.10.","0.10 x 250 = 25."],answer:"25"},
+      {q:"Convert 0.3 to a percent.",choices:["30%","3%","300%","0.3%"],correct:0,hint:"Multiply by 100.",steps:["0.3 x 100 = 30%."],answer:"30%"},
+      {q:"What is 50% of 64?",choices:["32","24","28","36"],correct:0,hint:"50% is half.",steps:["50% = 0.50.","0.50 x 64 = 32."],answer:"32"},
+      {q:"What is 15% of 200?",choices:["30","20","25","35"],correct:0,hint:"Convert 15% to 0.15.",steps:["15% = 0.15.","0.15 x 200 = 30."],answer:"30"},
+      {q:"Convert 3/4 to a percent.",choices:["75%","25%","50%","100%"],correct:0,hint:"Divide 3 by 4, then multiply by 100.",steps:["3/4 = 0.75.","0.75 x 100 = 75%."],answer:"75%"},
+      {q:"What is 5% of 60?",choices:["3","2","4","5"],correct:0,hint:"5% = 0.05.",steps:["5% = 0.05.","0.05 x 60 = 3."],answer:"3"},
+      {q:"A test has 40 questions. You got 90% correct. How many did you get right?",choices:["36","32","34","38"],correct:0,hint:"Find 90% of 40.",steps:["90% = 0.90.","0.90 x 40 = 36 questions."],answer:"36 questions"},
+      {q:"Convert 120% to a decimal.",choices:["1.2","0.12","12.0","120.0"],correct:0,hint:"Divide by 100.",steps:["120% = 120/100.","= 1.2."],answer:"1.2"},
+      {q:"What is 1% of 500?",choices:["5","1","10","50"],correct:0,hint:"1% = 0.01.",steps:["1% = 0.01.","0.01 x 500 = 5."],answer:"5"},
+      {q:"Convert 0.08 to a percent.",choices:["8%","0.8%","80%","800%"],correct:0,hint:"Multiply by 100.",steps:["0.08 x 100 = 8%."],answer:"8%"},
+      {q:"What is 30% of 90?",choices:["27","21","24","30"],correct:0,hint:"0.30 x 90.",steps:["30% = 0.30.","0.30 x 90 = 27."],answer:"27"},
+      {q:"A shirt costs $40. Sales tax is 8%. How much tax?",choices:["$3.20","$2.40","$4.00","$4.80"],correct:0,hint:"Find 8% of $40.",steps:["8% = 0.08.","0.08 x 40 = $3.20."],answer:"$3.20"},
+      {q:"Convert 2/5 to a percent.",choices:["40%","20%","25%","50%"],correct:0,hint:"Divide 2 by 5, multiply by 100.",steps:["2/5 = 0.4.","0.4 x 100 = 40%."],answer:"40%"}
+    ]
+  },
+  "3-2": {
+    title: "Connect Percent and Proportion",
+    pages: [
+      {
+        title: "The Percent Proportion",
+        body: '<p class="exp-line">We can solve percent problems using <span class="hl">proportions</span>.</p><p class="exp-line">The percent proportion is:</p><div class="visual-row"><div class="viz-card"><div class="big">part / whole</div><div class="lbl">=</div></div><div class="viz-card"><div class="big">percent / 100</div><div class="lbl">proportion</div></div></div><p class="exp-line">Example: What is 25% of 80?</p><p class="exp-line">x / 80 = 25 / 100 -> 100x = 2000 -> x = <span class="hl-g">20</span></p>'
+      },
+      {
+        title: "Finding the Percent",
+        body: '<p class="exp-line">Sometimes we need to find <span class="hl">what percent</span> one number is of another.</p><p class="exp-line">Use the same proportion: <span class="hl-o">part/whole = %/100</span></p><p class="exp-line">Example: What percent of 50 is 15?</p><p class="exp-line">15/50 = x/100 -> 50x = 1500 -> x = <span class="hl-g">30%</span></p><p class="exp-line">So 15 is 30% of 50.</p>'
+      }
+    ],
+    questions: [
+      {q:"What is 40% of 25? Use a proportion.",choices:["10","8","12","15"],correct:0,hint:"Set up: x/25 = 40/100.",steps:["x/25 = 40/100.","100x = 1000.","x = 10."],answer:"10"},
+      {q:"What percent of 80 is 20?",choices:["25%","20%","15%","30%"],correct:0,hint:"Set up: 20/80 = x/100.",steps:["20/80 = x/100.","80x = 2000.","x = 25%."],answer:"25%"},
+      {q:"15 is what percent of 60?",choices:["25%","20%","30%","35%"],correct:0,hint:"Set up: 15/60 = x/100.",steps:["15/60 = 1/4 = 25/100.","x = 25%."],answer:"25%"},
+      {q:"What is 60% of 50?",choices:["30","20","25","35"],correct:0,hint:"Set up: x/50 = 60/100.",steps:["x/50 = 60/100.","100x = 3000.","x = 30."],answer:"30"},
+      {q:"12 is what percent of 48?",choices:["25%","20%","30%","35%"],correct:0,hint:"Set up proportion.",steps:["12/48 = x/100.","12/48 = 1/4 = 25/100.","x = 25%."],answer:"25%"},
+      {q:"What percent of 200 is 50?",choices:["25%","20%","30%","50%"],correct:0,hint:"50/200 = x/100.",steps:["50/200 = 1/4 = 25/100.","x = 25%."],answer:"25%"},
+      {q:"Find 35% of 80 using a proportion.",choices:["28","24","26","30"],correct:0,hint:"x/80 = 35/100.",steps:["x/80 = 35/100.","100x = 2800.","x = 28."],answer:"28"},
+      {q:"18 is 30% of what number?",choices:["60","50","55","65"],correct:0,hint:"Set up: 18/x = 30/100.",steps:["18/x = 30/100.","30x = 1800.","x = 60."],answer:"60"},
+      {q:"What percent of 25 is 5?",choices:["20%","15%","25%","30%"],correct:0,hint:"5/25 = x/100.",steps:["5/25 = 1/5 = 20/100.","x = 20%."],answer:"20%"},
+      {q:"Find 75% of 120.",choices:["90","75","85","95"],correct:0,hint:"x/120 = 75/100.",steps:["x/120 = 75/100.","100x = 9000.","x = 90."],answer:"90"},
+      {q:"24 is 40% of what number?",choices:["60","50","55","65"],correct:0,hint:"24/x = 40/100.",steps:["24/x = 40/100.","40x = 2400.","x = 60."],answer:"60"},
+      {q:"What is 8% of 50?",choices:["4","2","6","8"],correct:0,hint:"x/50 = 8/100.",steps:["x/50 = 8/100.","100x = 400.","x = 4."],answer:"4"},
+      {q:"What percent of 40 is 30?",choices:["75%","60%","70%","80%"],correct:0,hint:"30/40 = x/100.",steps:["30/40 = 3/4 = 75/100.","x = 75%."],answer:"75%"},
+      {q:"Find 45% of 200.",choices:["90","80","85","95"],correct:0,hint:"x/200 = 45/100.",steps:["x/200 = 45/100.","100x = 9000.","x = 90."],answer:"90"},
+      {q:"9 is what percent of 36?",choices:["25%","20%","30%","35%"],correct:0,hint:"9/36 = x/100.",steps:["9/36 = 1/4 = 25/100.","x = 25%."],answer:"25%"}
+    ]
+  },
+  "3-3": {
+    title: "Represent and Use the Percent Equation",
+    pages: [
+      {
+        title: "The Percent Equation",
+        body: '<p class="exp-line">The percent equation is:</p><div class="visual-row"><div class="viz-card"><div class="big">part = % x whole</div><div class="lbl">equation</div></div></div><p class="exp-line">Where the percent is written as a <span class="hl">decimal</span>.</p><p class="exp-line">Example: 30% of 90 = <span class="hl-g">0.30 x 90 = 27</span></p><p class="exp-line">Three types:</p><p class="exp-line">1. Find part: p = % x w</p><p class="exp-line">2. Find %: % = p / w</p><p class="exp-line">3. Find whole: w = p / %</p>'
+      },
+      {
+        title: "Example Walkthrough",
+        body: '<p class="exp-line">Example: 8 is 20% of what number?</p><p class="exp-line">This is Type 3 (find whole):</p><p class="exp-line">whole = part / percent</p><p class="exp-line">whole = 8 / 0.20</p><p class="exp-line">whole = <span class="hl-g">40</span></p><p class="exp-line">So 8 is 20% of 40.</p><p class="exp-line"><span class="hl-o">Always write the percent as a decimal first!</span></p>'
+      }
+    ],
+    questions: [
+      {q:"Use the percent equation: What is 30% of 90?",choices:["27","24","30","33"],correct:0,hint:"part = 0.30 x 90.",steps:["part = 0.30 x 90.","= 27."],answer:"27"},
+      {q:"What percent of 50 is 10? (Use percent equation)",choices:["20%","15%","25%","30%"],correct:0,hint:"percent = part / whole.",steps:["percent = 10 / 50.","= 0.20 = 20%."],answer:"20%"},
+      {q:"8 is 20% of what number?",choices:["40","30","35","45"],correct:0,hint:"whole = part / percent.",steps:["whole = 8 / 0.20.","= 40."],answer:"40"},
+      {q:"Find 12% of 75.",choices:["9","7","8","10"],correct:0,hint:"part = 0.12 x 75.",steps:["0.12 x 75 = 9."],answer:"9"},
+      {q:"What percent of 80 is 16?",choices:["20%","15%","25%","30%"],correct:0,hint:"16 / 80.",steps:["16 / 80 = 0.20 = 20%."],answer:"20%"},
+      {q:"21 is 35% of what number?",choices:["60","50","55","65"],correct:0,hint:"21 / 0.35.",steps:["21 / 0.35 = 60."],answer:"60"},
+      {q:"What is 85% of 20?",choices:["17","15","16","18"],correct:0,hint:"0.85 x 20.",steps:["0.85 x 20 = 17."],answer:"17"},
+      {q:"45 is what percent of 90?",choices:["50%","40%","45%","55%"],correct:0,hint:"45 / 90.",steps:["45 / 90 = 0.50 = 50%."],answer:"50%"},
+      {q:"30 is 60% of what number?",choices:["50","40","45","55"],correct:0,hint:"30 / 0.60.",steps:["30 / 0.60 = 50."],answer:"50"},
+      {q:"Find 4% of 250.",choices:["10","8","12","14"],correct:0,hint:"0.04 x 250.",steps:["0.04 x 250 = 10."],answer:"10"},
+      {q:"What percent of 200 is 150?",choices:["75%","65%","70%","80%"],correct:0,hint:"150 / 200.",steps:["150 / 200 = 0.75 = 75%."],answer:"75%"},
+      {q:"18 is 45% of what number?",choices:["40","35","45","50"],correct:0,hint:"18 / 0.45.",steps:["18 / 0.45 = 40."],answer:"40"},
+      {q:"What is 33% of 300?",choices:["99","89","109","119"],correct:0,hint:"0.33 x 300.",steps:["0.33 x 300 = 99."],answer:"99"},
+      {q:"36 is what percent of 144?",choices:["25%","20%","30%","35%"],correct:0,hint:"36 / 144.",steps:["36 / 144 = 0.25 = 25%."],answer:"25%"},
+      {q:"Find 150% of 30.",choices:["45","35","40","50"],correct:0,hint:"1.50 x 30.",steps:["1.50 x 30 = 45."],answer:"45"}
+    ]
+  },
+  "3-4": {
+    title: "Solve Percent Change and Percent Error Problems",
+    pages: [
+      {
+        title: "Percent Change",
+        body: '<p class="exp-line">Percent change tells us how much a value has <span class="hl">increased or decreased</span> as a percent.</p><p class="exp-line">Formula:</p><div class="visual-row"><div class="viz-card"><div class="big">(new - old) / old x 100</div><div class="lbl">percent change</div></div></div><p class="exp-line">Positive = <span class="hl-g">increase</span>, Negative = <span class="hl-o">decrease</span>.</p><p class="exp-line">Example: Price goes from $20 to $25 -> (25-20)/20 x 100 = <span class="hl-g">25% increase</span></p>'
+      },
+      {
+        title: "Percent Error",
+        body: '<p class="exp-line">Percent error measures how far off an <span class="hl">estimate</span> is from the actual value.</p><p class="exp-line">Formula:</p><div class="visual-row"><div class="viz-card"><div class="big">|estimate - actual| / actual x 100</div><div class="lbl">percent error</div></div></div><p class="exp-line">The absolute value means we always get a <span class="hl-g">positive number</span>.</p><p class="exp-line">Example: You estimate 50, actual is 40 -> |50-40|/40 x 100 = <span class="hl-g">25% error</span></p>'
+      }
+    ],
+    questions: [
+      {q:"A price increases from $20 to $25. What is the percent increase?",choices:["25%","20%","30%","35%"],correct:0,hint:"(new - original) / original x 100.",steps:["(25-20)/20 x 100.","= 5/20 x 100 = 25%."],answer:"25%"},
+      {q:"A population decreases from 800 to 600. What is the percent decrease?",choices:["25%","20%","30%","35%"],correct:0,hint:"(original - new) / original x 100.",steps:["(800-600)/800 x 100.","= 200/800 x 100 = 25%."],answer:"25%"},
+      {q:"You estimate 40 marbles, actual is 50. What is the percent error?",choices:["20%","15%","25%","30%"],correct:0,hint:"|estimate - actual| / actual x 100.",steps:["|40-50|/50 x 100.","= 10/50 x 100 = 20%."],answer:"20%"},
+      {q:"A stock rises from $50 to $65. Percent increase?",choices:["30%","25%","35%","40%"],correct:0,hint:"(65-50)/50 x 100.",steps:["(65-50)/50 x 100.","= 15/50 x 100 = 30%."],answer:"30%"},
+      {q:"A shirt price drops from $40 to $30. Percent decrease?",choices:["25%","20%","30%","35%"],correct:0,hint:"(40-30)/40 x 100.",steps:["(40-30)/40 x 100.","= 10/40 x 100 = 25%."],answer:"25%"},
+      {q:"Estimate: 90, Actual: 100. Percent error?",choices:["10%","8%","12%","15%"],correct:0,hint:"|90-100|/100 x 100.",steps:["|90-100|/100 x 100.","= 10/100 x 100 = 10%."],answer:"10%"},
+      {q:"A salary increases from $2000 to $2400. Percent increase?",choices:["20%","15%","18%","25%"],correct:0,hint:"(2400-2000)/2000 x 100.",steps:["(2400-2000)/2000 x 100.","= 400/2000 x 100 = 20%."],answer:"20%"},
+      {q:"Estimate: 25, Actual: 20. Percent error?",choices:["25%","20%","30%","35%"],correct:0,hint:"|25-20|/20 x 100.",steps:["|25-20|/20 x 100.","= 5/20 x 100 = 25%."],answer:"25%"},
+      {q:"A temperature drops from 80 to 60. Percent decrease?",choices:["25%","20%","30%","35%"],correct:0,hint:"(80-60)/80 x 100.",steps:["(80-60)/80 x 100.","= 20/80 x 100 = 25%."],answer:"25%"},
+      {q:"A car's value goes from $10000 to $8000. Percent decrease?",choices:["20%","15%","18%","25%"],correct:0,hint:"(10000-8000)/10000 x 100.",steps:["2000/10000 x 100 = 20%."],answer:"20%"},
+      {q:"Estimate: 48, Actual: 60. Percent error?",choices:["20%","15%","18%","25%"],correct:0,hint:"|48-60|/60 x 100.",steps:["|48-60|/60 x 100.","= 12/60 x 100 = 20%."],answer:"20%"},
+      {q:"Enrollment grows from 500 to 650. Percent increase?",choices:["30%","25%","28%","35%"],correct:0,hint:"(650-500)/500 x 100.",steps:["150/500 x 100 = 30%."],answer:"30%"},
+      {q:"Estimate: 105, Actual: 100. Percent error?",choices:["5%","3%","7%","10%"],correct:0,hint:"|105-100|/100 x 100.",steps:["|105-100|/100 x 100.","= 5/100 x 100 = 5%."],answer:"5%"},
+      {q:"A game score goes from 200 to 250. Percent increase?",choices:["25%","20%","30%","35%"],correct:0,hint:"(250-200)/200 x 100.",steps:["50/200 x 100 = 25%."],answer:"25%"},
+      {q:"Estimate: 30, Actual: 24. Percent error?",choices:["25%","20%","30%","35%"],correct:0,hint:"|30-24|/24 x 100.",steps:["|30-24|/24 x 100.","= 6/24 x 100 = 25%."],answer:"25%"}
+    ]
+  },
+  "3-5": {
+    title: "Solve Markup and Markdown Problems",
+    pages: [
+      {
+        title: "Markup (Store Profit)",
+        body: '<p class="exp-line"><span class="hl">Markup</span> is the extra amount stores add to make profit.</p><p class="exp-line">Formula:</p><div class="visual-row"><div class="viz-card"><div class="big">selling price = cost + markup</div><div class="lbl">formula</div></div></div><p class="exp-line">Markup is usually a <span class="hl">percent of the cost</span>.</p><p class="exp-line">Example: Store buys shirt for $20, marks up 50%:</p><p class="exp-line">Markup = 0.50 x 20 = $10</p><p class="exp-line">Price = $20 + $10 = <span class="hl-g">$30</span></p>'
+      },
+      {
+        title: "Markdown (Discount/Sale)",
+        body: '<p class="exp-line"><span class="hl">Markdown</span> is the amount subtracted from the original price during a sale.</p><p class="exp-line">Formula:</p><div class="visual-row"><div class="viz-card"><div class="big">sale price = original - discount</div><div class="lbl">formula</div></div></div><p class="exp-line">Example: $60 jacket is 20% off:</p><p class="exp-line">Discount = 0.20 x 60 = $12</p><p class="exp-line">Sale price = $60 - $12 = <span class="hl-g">$48</span></p>'
+      }
+    ],
+    questions: [
+      {q:"A store buys a watch for $40 and marks it up 25%. What is the selling price?",choices:["$50","$45","$48","$55"],correct:0,hint:"Markup = 0.25 x 40, add to cost.",steps:["Markup = 0.25 x 40 = $10.","Price = $40 + $10 = $50."],answer:"$50"},
+      {q:"A $60 jacket is 20% off. What is the sale price?",choices:["$48","$40","$44","$50"],correct:0,hint:"Discount = 0.20 x 60, subtract from price.",steps:["Discount = 0.20 x 60 = $12.","Sale = $60 - $12 = $48."],answer:"$48"},
+      {q:"A book costs $15 to make. The store marks it up 40%. Selling price?",choices:["$21","$18","$20","$25"],correct:0,hint:"0.40 x 15 + 15.",steps:["Markup = 0.40 x 15 = $6.","Price = $15 + $6 = $21."],answer:"$21"},
+      {q:"A TV originally costs $400. It's 25% off. Sale price?",choices:["$300","$250","$275","$325"],correct:0,hint:"Discount = 0.25 x 400.",steps:["Discount = $100.","Sale = $400 - $100 = $300."],answer:"$300"},
+      {q:"Cost = $50, Markup = 30%. Find selling price.",choices:["$65","$60","$70","$75"],correct:0,hint:"0.30 x 50 + 50.",steps:["Markup = $15.","Price = $50 + $15 = $65."],answer:"$65"},
+      {q:"Original price $80, discount 15%. Sale price?",choices:["$68","$60","$66","$72"],correct:0,hint:"0.15 x 80 = discount.",steps:["Discount = $12.","Sale = $80 - $12 = $68."],answer:"$68"},
+      {q:"A chair costs $30 wholesale. Markup 50%. Selling price?",choices:["$45","$40","$50","$55"],correct:0,hint:"0.50 x 30 + 30.",steps:["Markup = $15.","Price = $30 + $15 = $45."],answer:"$45"},
+      {q:"A bike is $200, marked down 35%. Sale price?",choices:["$130","$120","$125","$135"],correct:0,hint:"0.35 x 200 = discount.",steps:["Discount = $70.","Sale = $200 - $70 = $130."],answer:"$130"},
+      {q:"Store buys a lamp for $25, marks up 60%. Selling price?",choices:["$40","$35","$38","$42"],correct:0,hint:"0.60 x 25 = $15 markup.",steps:["Markup = $15.","Price = $25 + $15 = $40."],answer:"$40"},
+      {q:"A $90 coat is 30% off. Sale price?",choices:["$63","$56","$60","$67"],correct:0,hint:"0.30 x 90 = $27 discount.",steps:["Discount = $27.","Sale = $90 - $27 = $63."],answer:"$63"},
+      {q:"Cost $200, markup 25%. Selling price?",choices:["$250","$225","$240","$275"],correct:0,hint:"0.25 x 200 = $50.",steps:["Markup = $50.","Price = $200 + $50 = $250."],answer:"$250"},
+      {q:"Original $120, discount 40%. Sale price?",choices:["$72","$60","$66","$78"],correct:0,hint:"0.40 x 120 = $48.",steps:["Discount = $48.","Sale = $120 - $48 = $72."],answer:"$72"},
+      {q:"A ring costs $100, marked up 45%. Selling price?",choices:["$145","$140","$135","$150"],correct:0,hint:"0.45 x 100 + 100.",steps:["Markup = $45.","Price = $100 + $45 = $145."],answer:"$145"},
+      {q:"A $250 phone is 20% off. Sale price?",choices:["$200","$180","$190","$210"],correct:0,hint:"0.20 x 250 = $50.",steps:["Discount = $50.","Sale = $250 - $50 = $200."],answer:"$200"},
+      {q:"Cost $80, markup 35%. Selling price?",choices:["$108","$98","$100","$110"],correct:0,hint:"0.35 x 80 + 80.",steps:["Markup = $28.","Price = $80 + $28 = $108."],answer:"$108"}
+    ]
+  },
+  "3-6": {
+    title: "Solve Simple Interest Problems",
+    pages: [
+      {
+        title: "What is Simple Interest?",
+        body: '<p class="exp-line"><span class="hl">Simple interest</span> is money earned or paid for using money.</p><p class="exp-line">Formula:</p><div class="visual-row"><div class="viz-card"><div class="big">I = P x R x T</div><div class="lbl">formula</div></div></div><p class="exp-line">Where:</p><p class="exp-line"><span class="hl-g">I</span> = interest</p><p class="exp-line"><span class="hl-g">P</span> = principal (starting money)</p><p class="exp-line"><span class="hl-g">R</span> = annual interest rate (as decimal)</p><p class="exp-line"><span class="hl-g">T</span> = time in years</p><p class="exp-line">Example: $500 at 4% for 2 years:</p><p class="exp-line">I = 500 x 0.04 x 2 = <span class="hl-g">$40</span></p>'
+      },
+      {
+        title: "Finding Total Amount",
+        body: '<p class="exp-line">After finding the interest, add it to the principal for the total:</p><div class="visual-row"><div class="viz-card"><div class="big">Total = P + I</div><div class="lbl">formula</div></div></div><p class="exp-line">Example: $1000 at 5% for 3 years:</p><p class="exp-line">I = 1000 x 0.05 x 3 = $150</p><p class="exp-line">Total = $1000 + $150 = <span class="hl-g">$1150</span></p><p class="exp-line">Simple interest is used in savings, loans, and investments.</p>'
+      }
+    ],
+    questions: [
+      {q:"Find the simple interest: P = $500, R = 4%, T = 2 years.",choices:["$40","$20","$30","$50"],correct:0,hint:"I = P x R x T. Use R = 0.04.",steps:["I = 500 x 0.04 x 2.","= $40."],answer:"$40"},
+      {q:"Find interest: P = $1000, R = 5%, T = 3 years.",choices:["$150","$100","$120","$180"],correct:0,hint:"I = 1000 x 0.05 x 3.",steps:["I = 1000 x 0.05 x 3 = $150."],answer:"$150"},
+      {q:"P = $800, R = 6%, T = 1 year. Find I.",choices:["$48","$24","$36","$60"],correct:0,hint:"I = 800 x 0.06 x 1.",steps:["I = 800 x 0.06 x 1 = $48."],answer:"$48"},
+      {q:"P = $2000, R = 3%, T = 4 years. Find total amount (P + I).",choices:["$2240","$2160","$2200","$2280"],correct:0,hint:"First find I, then add to P.",steps:["I = 2000 x 0.03 x 4 = $240.","Total = 2000 + 240 = $2240."],answer:"$2240"},
+      {q:"P = $600, R = 8%, T = 2 years. Find I.",choices:["$96","$72","$84","$108"],correct:0,hint:"I = 600 x 0.08 x 2.",steps:["I = 600 x 0.08 x 2 = $96."],answer:"$96"},
+      {q:"P = $1500, R = 4%, T = 5 years. Find total.",choices:["$1800","$1700","$1750","$1850"],correct:0,hint:"Find I first: 1500 x 0.04 x 5.",steps:["I = $300.","Total = 1500 + 300 = $1800."],answer:"$1800"},
+      {q:"Find I: P = $300, R = 10%, T = 3 years.",choices:["$90","$60","$75","$100"],correct:0,hint:"I = 300 x 0.10 x 3.",steps:["I = 300 x 0.10 x 3 = $90."],answer:"$90"},
+      {q:"P = $5000, R = 2%, T = 3 years. Find total.",choices:["$5300","$5200","$5250","$5350"],correct:0,hint:"I = 5000 x 0.02 x 3 = 300.",steps:["I = $300.","Total = $5000 + $300 = $5300."],answer:"$5300"},
+      {q:"Interest = $60, P = $600, R = 5%. Find T.",choices:["2 years","1 year","3 years","4 years"],correct:0,hint:"T = I / (P x R).",steps:["T = 60 / (600 x 0.05).","= 60/30 = 2 years."],answer:"2 years"},
+      {q:"P = $1200, R = 5%, T = 2 years. Find I.",choices:["$120","$100","$110","$130"],correct:0,hint:"I = 1200 x 0.05 x 2.",steps:["I = 1200 x 0.05 x 2 = $120."],answer:"$120"},
+      {q:"Find total: P = $2000, R = 6%, T = 2 years.",choices:["$2240","$2200","$2220","$2260"],correct:0,hint:"I = 2000 x 0.06 x 2 = 240.",steps:["I = $240.","Total = $2240."],answer:"$2240"},
+      {q:"Interest = $120, P = $800, T = 3 years. Find R.",choices:["5%","3%","4%","6%"],correct:0,hint:"R = I / (P x T).",steps:["R = 120 / (800 x 3).","= 120/2400 = 0.05 = 5%."],answer:"5%"},
+      {q:"P = $400, R = 7%, T = 2 years. Find I.",choices:["$56","$48","$52","$60"],correct:0,hint:"I = 400 x 0.07 x 2.",steps:["I = 400 x 0.07 x 2 = $56."],answer:"$56"},
+      {q:"P = $2500, R = 4%, T = 2 years. Find total.",choices:["$2700","$2600","$2650","$2750"],correct:0,hint:"I = 2500 x 0.04 x 2 = 200.",steps:["Total = $2500 + $200 = $2700."],answer:"$2700"},
+      {q:"P = $1000, R = 9%, T = 1 year. Find I.",choices:["$90","$70","$80","$100"],correct:0,hint:"I = 1000 x 0.09 x 1.",steps:["I = 1000 x 0.09 x 1 = $90."],answer:"$90"}
+    ]
+  }
+};
+
+/* ---------- NAVIGATION ---------- */
+function goToScreen(id){
+  var screens = document.querySelectorAll('.screen');
+  for(var i = 0; i < screens.length; i++){
+    screens[i].classList.remove('active');
+  }
+  var target = document.getElementById(id);
+  if(target) target.classList.add('active');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+/* ---------- START ---------- */
+document.getElementById('startBtn').addEventListener('click', function(){
+  var name = document.getElementById('nameInput').value.trim();
+  if(!name){
+    showToast('Please enter your name first!', 'error');
+    return;
+  }
+  state.name = name;
+  document.getElementById('welcomeName').textContent = name;
+  document.getElementById('scorePlayer').textContent = name.toUpperCase().slice(0, 8);
+  ensureAudio();
+  playClick();
+  renderTopics();
+  goToScreen('screen-topics');
+});
+
+document.getElementById('nameInput').addEventListener('keydown', function(e){
+  if(e.key === 'Enter') document.getElementById('startBtn').click();
+});
+
+/* ---------- TOPICS ---------- */
+function renderTopics(){
+  var list = document.getElementById('topicsList');
+  var html = '';
+  for(var i = 0; i < TOPICS.length; i++){
+    var t = TOPICS[i];
+    html += '<div class="topic-card" onclick="openTopic(' + t.id + ')">';
+    html += '<div class="topic-icon-box"><i class="' + t.icon + '"></i></div>';
+    html += '<h3 class="font-display text-xl mb-1" style="color:#fff">Topic ' + t.id + '</h3>';
+    html += '<p class="font-display text-lg mb-2" style="color:var(--gold)">' + t.title + '</p>';
+    html += '<p style="color:var(--text-muted);font-size:14px">' + t.desc + '</p>';
+    html += '<div class="flex items-center justify-between mt-4">';
+    html += '<span style="color:var(--text-muted);font-size:13px"><i class="fa-solid fa-book-open mr-1"></i> ' + t.lessons.length + ' lessons</span>';
+    html += '<span style="color:var(--gold);font-weight:600">Start <i class="fa-solid fa-arrow-right ml-1"></i></span>';
+    html += '</div></div>';
+  }
+  list.innerHTML = html;
+}
+
+function openTopic(id){
+  var topic = null;
+  for(var i = 0; i < TOPICS.length; i++){
+    if(TOPICS[i].id === id){ topic = TOPICS[i]; break; }
+  }
+  if(!topic) return;
+  state.topicId = id;
+  document.getElementById('lessonsTopicTitle').textContent = topic.title;
+  var list = document.getElementById('lessonsList');
+  var html = '';
+  for(var i = 0; i < topic.lessons.length; i++){
+    var l = topic.lessons[i];
+    html += '<div class="lesson-pill" onclick="openLesson(\'' + l.id + '\')">';
+    html += '<div class="lesson-num">' + (i + 1) + '</div>';
+    html += '<div class="flex-1">';
+    html += '<div style="color:var(--gold);font-size:12px;letter-spacing:2px">LESSON ' + l.id + '</div>';
+    html += '<div style="color:#fff;font-size:17px;font-weight:600">' + l.title + '</div>';
+    html += '</div>';
+    html += '<i class="fa-solid fa-chevron-right" style="color:var(--text-muted)"></i>';
+    html += '</div>';
+  }
+  list.innerHTML = html;
+  goToScreen('screen-lessons');
+}
+
+/* ---------- LESSON EXPLANATION ---------- */
+function openLesson(lessonId){
+  state.lessonId = lessonId;
+  state.expPage = 0;
+  var data = LESSONS_DATA[lessonId];
+  if(!data){ showToast('Lesson coming soon!', 'error'); return; }
+  document.getElementById('expLessonTitle').textContent = data.title;
+  var pagesContainer = document.getElementById('expPages');
+  var html = '';
+  for(var i = 0; i < data.pages.length; i++){
+    var p = data.pages[i];
+    html += '<div class="exp-page' + (i === 0 ? ' active' : '') + '" data-page="' + i + '">';
+    html += '<h2 class="exp-title">' + p.title + '</h2>';
+    html += p.body;
+    html += '</div>';
+  }
+  pagesContainer.innerHTML = html;
+  updateExpPager();
+  goToScreen('screen-explanation');
+}
+
+function updateExpPager(){
+  var data = LESSONS_DATA[state.lessonId];
+  var total = data.pages.length;
+  document.getElementById('expPageIndicator').textContent = 'Page ' + (state.expPage + 1) + ' of ' + total;
+  document.getElementById('expPrev').style.visibility = state.expPage === 0 ? 'hidden' : 'visible';
+  var nextBtn = document.getElementById('expNext');
+  if(state.expPage === total - 1){
+    nextBtn.innerHTML = 'Start Game <i class="fa-solid fa-futbol"></i>';
+  } else {
+    nextBtn.innerHTML = 'Next <i class="fa-solid fa-chevron-right"></i>';
+  }
+}
+
+document.getElementById('expPrev').addEventListener('click', function(){
+  if(state.expPage > 0){
+    state.expPage--;
+    showExpPage();
+    playClick();
+  }
+});
+
+document.getElementById('expNext').addEventListener('click', function(){
+  var data = LESSONS_DATA[state.lessonId];
+  if(state.expPage < data.pages.length - 1){
+    state.expPage++;
+    showExpPage();
+    playClick();
+  } else {
+    startQuiz();
+  }
+});
+
+function showExpPage(){
+  var pages = document.querySelectorAll('.exp-page');
+  for(var i = 0; i < pages.length; i++){
+    pages[i].classList.remove('active');
+  }
+  var target = document.querySelector('.exp-page[data-page="' + state.expPage + '"]');
+  if(target) target.classList.add('active');
+  updateExpPager();
+}
+
+/* ---------- QUIZ ---------- */
+function startQuiz(){
+  state.qIndex = 0;
+  state.goals = 0;
+  state.misses = 0;
+  state.answered = [];
+  state.miniGamesPlayed = 0;
+  var data = LESSONS_DATA[state.lessonId];
+  document.getElementById('quizLessonTitle').textContent = data.title;
+  document.getElementById('scoreGoals').textContent = '0';
+  document.getElementById('scoreMisses').textContent = '0';
+  renderProgress();
+  loadQuestion();
+  goToScreen('screen-quiz');
+}
+
+function renderProgress(){
+  var container = document.getElementById('qProgress');
+  var html = '';
+  for(var i = 0; i < 15; i++){
+    var cls = 'q-dot';
+    if(state.answered[i] === 'correct') cls += ' done';
+    else if(state.answered[i] === 'wrong') cls += ' wrong';
+    else if(i === state.qIndex) cls += ' current';
+    html += '<div class="' + cls + '"></div>';
+  }
+  container.innerHTML = html;
+}
+
+function shuffleArray(arr) {
+    for (var i = arr.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+    return arr;
+}
+
+function loadQuestion(){
+  var data = LESSONS_DATA[state.lessonId];
+  var originalQ = data.questions[state.qIndex];
+
+  // Deep copy and shuffle choices
+  var q = JSON.parse(JSON.stringify(originalQ));
+  var combined = [];
+  for(var i=0; i<q.choices.length; i++){
+    combined.push({ text: q.choices[i], isCorrect: i === q.correct });
+  }
+  combined = shuffleArray(combined);
+  
+  q.choices = combined.map(function(item){ return item.text; });
+  q.correct = combined.findIndex(function(item){ return item.isCorrect; });
+
+  document.getElementById('qNumber').textContent = state.qIndex + 1;
+  document.getElementById('qText').textContent = q.q;
+  document.getElementById('hintBox').classList.remove('show');
+  document.getElementById('stepsBox').classList.remove('show');
+  document.getElementById('nextBtn').classList.add('hidden');
+  document.getElementById('hintBtn').disabled = false;
+  document.getElementById('skipBtn').style.display = 'none';
+
+  var ball = document.getElementById('ball');
+  ball.classList.add('hidden');
+  ball.style.transition = 'none';
+  ball.style.transform = 'translateX(-50%)';
+  ball.style.bottom = '130px';
+  var ballRef = ball;
+  setTimeout(function(){ ballRef.style.transition = ''; }, 20);
+
+  document.getElementById('keeper').className = 'keeper';
+  document.getElementById('goalText').classList.remove('show');
+  document.getElementById('saveText').classList.remove('show');
+  document.getElementById('goalFlash').classList.remove('show');
+
+  var choicesContainer = document.getElementById('qChoices');
+  var letters = ['A', 'B', 'C', 'D'];
+  var html = '';
+  for(var i = 0; i < q.choices.length; i++){
+    html += '<div class="choice" data-i="' + i + '" onclick="answerQuestion(' + i + ', ' + q.correct + ')">';
+    html += '<div class="badge">' + letters[i] + '</div>';
+    html += '<span>' + q.choices[i] + '</span>';
+    html += '</div>';
+  }
+  choicesContainer.innerHTML = html;
+  
+  // Store current correct answer globally for steps box
+  state.currentCorrect = q.correct;
+  state.currentQ = q;
+  
+  renderProgress();
+}
+
+function answerQuestion(choiceIdx, correctIdx){
+  var choices = document.querySelectorAll('.choice');
+  for(var i = 0; i < choices.length; i++){
+    choices[i].classList.add('disabled');
+    choices[i].onclick = null;
+  }
+
+  var isCorrect = choiceIdx === correctIdx;
+  if(isCorrect){
+    choices[choiceIdx].classList.add('correct');
+    state.goals++;
+    state.answered[state.qIndex] = 'correct';
+    document.getElementById('scoreGoals').textContent = state.goals;
+    animateGoal();
+  } else {
+    choices[choiceIdx].classList.add('wrong');
+    choices[correctIdx].classList.add('correct');
+    state.misses++;
+    state.answered[state.qIndex] = 'wrong';
+    document.getElementById('scoreMisses').textContent = state.misses;
+    animateSave(state.currentQ);
+  }
+  playClick();
+}
+
+function animateGoal(){
+  playGoal();
+  var ball = document.getElementById('ball');
+  ball.classList.remove('hidden');
+  ball.style.bottom = '130px';
+  ball.style.left = '50%';
+  ball.style.transform = 'translateX(-50%)';
+  var keeper = document.getElementById('keeper');
+  var dive = Math.random() < 0.5 ? 'dive-left' : 'dive-right';
+  keeper.className = 'keeper ' + dive;
+  setTimeout(function(){
+    ball.style.transition = 'bottom 0.7s cubic-bezier(.4,.0,.2,1), left 0.7s ease, transform 0.7s ease';
+    ball.style.bottom = '85%';
+    ball.style.left = '50%';
+    ball.style.transform = 'translateX(-50%) scale(0.5)';
+  }, 50);
+  setTimeout(function(){
+    document.getElementById('goalFlash').classList.add('show');
+    var cheer = randomCheer();
+    document.getElementById('goalText').textContent = cheer;
+    document.getElementById('goalText').classList.add('show');
+    showToast(cheer, 'success');
+  }, 700);
+  setTimeout(function(){ showNextButton(); }, 1400);
+}
+
+function animateSave(q){
+  playSave();
+  var ball = document.getElementById('ball');
+  ball.classList.remove('hidden');
+  ball.style.bottom = '130px';
+  ball.style.left = '50%';
+  ball.style.transform = 'translateX(-50%)';
+  var keeper = document.getElementById('keeper');
+  keeper.className = 'keeper dive-center';
+  setTimeout(function(){
+    ball.style.transition = 'bottom 0.5s ease, transform 0.5s ease';
+    ball.style.bottom = '50%';
+    ball.style.transform = 'translateX(-50%) scale(0.7)';
+  }, 50);
+  setTimeout(function(){
+    document.getElementById('saveText').textContent = 'SAVED!';
+    document.getElementById('saveText').classList.add('show');
+    showToast("Oh oh! Let's learn from this.", 'error');
+    showSteps(q);
+  }, 600);
+  setTimeout(function(){ showNextButton(); }, 1300);
+}
+
+function showSteps(q){
+  var box = document.getElementById('stepsBox');
+  var list = document.getElementById('stepsList');
+  var html = '';
+  for(var i = 0; i < q.steps.length; i++){
+    html += '<li>' + q.steps[i] + '</li>';
+  }
+  list.innerHTML = html;
+  document.getElementById('answerLine').textContent = '\u2713 ' + q.answer;
+  box.classList.add('show');
+}
+
+function showNextButton(){
+  document.getElementById('nextBtn').classList.remove('hidden');
+  document.getElementById('skipBtn').style.display = 'inline-flex';
+}
+
+document.getElementById('hintBtn').addEventListener('click', function(){
+  document.getElementById('hintText').textContent = ' ' + state.currentQ.hint;
+  document.getElementById('hintBox').classList.add('show');
+  document.getElementById('hintBtn').disabled = true;
+  playClick();
+});
+
+document.getElementById('skipBtn').addEventListener('click', function(){
+  document.getElementById('stepsBox').classList.remove('show');
+  document.getElementById('hintBox').classList.remove('show');
+  playClick();
+});
+
+document.getElementById('nextBtn').addEventListener('click', function(){
+  playClick();
+  state.qIndex++;
+  if(state.qIndex >= 15){
+    showResults();
+    return;
+  }
+  if(state.qIndex > 0 && state.qIndex % 5 === 0){
+    launchMiniGame();
+  } else {
+    loadQuestion();
+  }
+});
+
+function confirmExitQuiz(){
+  if(confirm('Exit the match? Your progress will be lost.')){
+    goToScreen('screen-lessons');
+  }
+}
+
+/* ---------- CHEERS ---------- */
+var CHEERS = ["GOAL!", "AMAZING!", "BRILLIANT!", "FANTASTIC!", "SUPERB!", "WONDERFUL!", "INCREDIBLE!", "CHAMPION!"];
+function randomCheer(){ return CHEERS[Math.floor(Math.random() * CHEERS.length)]; }
+
+function showToast(msg, type){
+  var t = document.getElementById('cheerToast');
+  t.textContent = msg;
+  t.className = 'cheer-toast ' + (type === 'error' ? 'error' : '');
+  setTimeout(function(){ t.classList.add('show'); }, 10);
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2200);
+}
+
+/* ---------- MINI GAMES ---------- */
+var mgTimer = null;
+var mgScore = 0;
+var mgActive = false;
+var mgGameType = 0;
+var mgSpawnInterval = null;
+
+function launchMiniGame(){
+  var types = ['stars', 'target', 'moles'];
+  mgGameType = state.miniGamesPlayed % types.length;
+  state.miniGamesPlayed++;
+  startMiniGame(types[mgGameType]);
+}
+
+function startMiniGame(type){
+  mgScore = 0;
+  mgActive = true;
+  document.getElementById('mgContinueBtn').classList.add('hidden');
+  document.getElementById('mgScore').textContent = '0';
+  var area = document.getElementById('mgArea');
+  area.innerHTML = '';
+  area.style.display = '';
+  area.style.gridTemplateColumns = '';
+  area.style.gap = '';
+  area.style.padding = '';
+  area.style.alignItems = '';
+  area.style.justifyItems = '';
+
+  var timeLeft = 10;
+  document.getElementById('mgTimer').textContent = timeLeft + 's';
+
+  if(type === 'stars'){
+    document.getElementById('mgTarget').innerHTML = '<i class="fa-solid fa-star" style="color:var(--gold)"></i> Catch the Stars!';
+    document.getElementById('mgInstr').textContent = 'Tap the stars and gifts before they fall!';
+    startStars();
+  } else if(type === 'target'){
+    document.getElementById('mgTarget').innerHTML = '<i class="fa-solid fa-bullseye"></i> Hit the targets!';
+    document.getElementById('mgInstr').textContent = 'Tap the glowing targets as fast as you can!';
+    startTargets();
+  } else {
+    document.getElementById('mgTarget').innerHTML = '<i class="fa-solid fa-mountain"></i> Whack the moles!';
+    document.getElementById('mgInstr').textContent = 'Tap the moles as they pop up!';
+    startMoles();
+  }
+
+  mgTimer = setInterval(function(){
+    timeLeft--;
+    document.getElementById('mgTimer').textContent = timeLeft + 's';
+    if(timeLeft <= 0){
+      clearInterval(mgTimer);
+      endMiniGame();
+    }
+  }, 1000);
+
+  goToScreen('screen-minigame');
+}
+
+function endMiniGame(){
+  mgActive = false;
+  if(mgSpawnInterval){ clearInterval(mgSpawnInterval); mgSpawnInterval = null; }
+  document.getElementById('mgInstr').innerHTML = '<span style="color:var(--gold);font-family:Bungee,sans-serif">Time! You scored ' + mgScore + ' points!</span>';
+  document.getElementById('mgContinueBtn').classList.remove('hidden');
+  playWin();
+  if(mgScore > 0){
+    state.goals += Math.min(mgScore, 3);
+    document.getElementById('scoreGoals').textContent = state.goals;
+  }
+}
+
+document.getElementById('mgContinueBtn').addEventListener('click', function(){
+  playClick();
+  loadQuestion();
+  goToScreen('screen-quiz');
+});
+
+function startStars(){
+  var area = document.getElementById('mgArea');
+  var emojis = ['⭐', '⭐', '⭐', '⭐', '🎁'];
+  mgSpawnInterval = setInterval(function(){
+    if(!mgActive){ clearInterval(mgSpawnInterval); return; }
+    var item = document.createElement('div');
+    var emoji = emojis[Math.floor(Math.random() * emojis.length)];
+    item.className = 'fall-item';
+    item.textContent = emoji;
+    item.style.left = (Math.random() * 85 + 5) + '%';
+    item.style.animationDuration = (1.5 + Math.random() * 1.5) + 's';
+    item.onclick = function(){
+      if(!mgActive) return;
+      mgScore++;
+      document.getElementById('mgScore').textContent = mgScore;
+      playPop();
+      item.classList.add('popped');
+      setTimeout(function(){ if(item.parentNode) item.remove(); }, 300);
+    };
+    area.appendChild(item);
+    setTimeout(function(){ if(item.parentNode) item.remove(); }, 3500);
+  }, 300);
+}
+
+function startTargets(){
+  var area = document.getElementById('mgArea');
+  mgSpawnInterval = setInterval(function(){
+    if(!mgActive){ clearInterval(mgSpawnInterval); return; }
+    var t = document.createElement('div');
+    t.className = 'target-circle';
+    t.style.left = (Math.random() * 80 + 5) + '%';
+    t.style.top = (Math.random() * 70 + 5) + '%';
+    var hue = Math.floor(Math.random() * 100 + 50);
+    t.style.background = 'radial-gradient(circle, rgba(255,217,61,.2), rgba(255,' + hue + ',53,.3))';
+    t.onclick = function(){
+      if(!mgActive) return;
+      mgScore++;
+      document.getElementById('mgScore').textContent = mgScore;
+      playPop();
+      t.classList.add('hit');
+      setTimeout(function(){ if(t.parentNode) t.remove(); }, 300);
+    };
+    area.appendChild(t);
+    setTimeout(function(){ if(t.parentNode) t.remove(); }, 1500);
+  }, 500);
+}
+
+function startMoles(){
+  var area = document.getElementById('mgArea');
+  area.innerHTML = '';
+  area.style.display = 'grid';
+  area.style.gridTemplateColumns = 'repeat(3, 1fr)';
+  area.style.gap = '20px';
+  area.style.padding = '20px';
+  area.style.alignItems = 'center';
+  area.style.justifyItems = 'center';
+
+  var holes = [];
+  for(var i = 0; i < 6; i++){
+    var h = document.createElement('div');
+    h.className = 'mole-hole';
+    h.innerHTML = '<div class="mole-emoji">\uD83D\uDC39</div>';
+    h.onclick = function(){
+      if(this.classList.contains('up') && mgActive){
+        mgScore++;
+        document.getElementById('mgScore').textContent = mgScore;
+        playPop();
+        this.classList.remove('up');
+      }
+    };
+    area.appendChild(h);
+    holes.push(h);
+  }
+  mgSpawnInterval = setInterval(function(){
+    if(!mgActive){ clearInterval(mgSpawnInterval); return; }
+    for(var i = 0; i < holes.length; i++){
+      holes[i].classList.remove('up');
+    }
+    var n = Math.random() < 0.5 ? 1 : 2;
+    for(var j = 0; j < n; j++){
+      var idx = Math.floor(Math.random() * holes.length);
+      holes[idx].classList.add('up');
+      var emoji = holes[idx].querySelector('.mole-emoji');
+      emoji.textContent = Math.random() < 0.8 ? '\uD83D\uDC39' : '\u2B50';
+    }
+  }, 800);
+}
+
+/* ---------- RESULTS & RANKING ---------- */
+function showResults(){
+  document.getElementById('resGoals').textContent = state.goals;
+  document.getElementById('resMisses').textContent = state.misses;
+  var total = 15;
+  var correct = state.goals;
+  var acc = Math.round((correct / total) * 100);
+  document.getElementById('resAccuracy').textContent = acc + '%';
+  renderRanking();
+  goToScreen('screen-results');
+  playWin();
+}
+
+function renderRanking(){
+  var rank;
+  if(state.misses <= 2) rank = 1;
+  else if(state.misses <= 5) rank = 2;
+  else if(state.misses <= 8) rank = 3;
+  else if(state.misses <= 11) rank = 4;
+  else rank = 5;
+
+  var namesPool = ["Alex","Emma","Liam","Olivia","Noah","Ava","Ethan","Sophia","Mason","Isabella","Lucas","Mia","Logan","Charlotte","James","Amelia"];
+  var usedNames = [];
+  while(usedNames.length < 6){
+    var n = namesPool[Math.floor(Math.random() * namesPool.length)];
+    if(usedNames.indexOf(n) === -1 && n !== state.name) usedNames.push(n);
+  }
+
+  var ranks = [];
+  for(var i = 1; i <= 6; i++){
+    if(i === rank){
+      ranks.push({name: state.name, goals: state.goals, misses: state.misses, isYou: true});
+    } else {
+      var g, m;
+      if(i < rank){
+        g = Math.min(15, state.goals + (rank - i) + Math.floor(Math.random() * 2));
+        m = Math.max(0, state.misses - (rank - i) * 2);
+      } else {
+        g = Math.max(0, state.goals - (i - rank));
+        m = state.misses + (i - rank) * 2;
+      }
+      g = Math.min(15, Math.max(0, g));
+      m = Math.min(15, Math.max(0, m));
+      ranks.push({name: usedNames.shift(), goals: g, misses: m, isYou: false});
+    }
+  }
+  ranks.sort(function(a, b){ return b.goals - a.goals || a.misses - b.misses; });
+
+  var list = document.getElementById('rankingList');
+  var html = '';
+  for(var i = 0; i < ranks.length; i++){
+    var r = ranks[i];
+    var pos = i + 1;
+    var cls = r.isYou ? 'rank-row you' : 'rank-row';
+    var rankCls = pos === 1 ? 'r1' : pos === 2 ? 'r2' : pos === 3 ? 'r3' : '';
+    var medal = pos === 1 ? '\uD83E\uDD47' : pos === 2 ? '\uD83E\uDD48' : pos === 3 ? '\uD83E\uDD49' : '#' + pos;
+    html += '<div class="' + cls + '">';
+    html += '<div class="rank-num ' + rankCls + '">' + medal + '</div>';
+    html += '<div class="rank-name">' + r.name + (r.isYou ? ' <span style="color:var(--gold);font-size:12px">(YOU)</span>' : '') + '</div>';
+    html += '<div class="rank-score">' + r.goals + ' goals \u2022 ' + r.misses + ' misses</div>';
+    html += '</div>';
+  }
+  list.innerHTML = html;
+}
+
+/* ---------- CERTIFICATE ---------- */
+function showCertificate(){
+  var data = LESSONS_DATA[state.lessonId];
+  var acc = Math.round((state.goals / 15) * 100);
+  var rank;
+  if(state.misses <= 2) rank = '1st';
+  else if(state.misses <= 5) rank = '2nd';
+  else if(state.misses <= 8) rank = '3rd';
+  else if(state.misses <= 11) rank = '4th';
+  else rank = '5th';
+
+  document.getElementById('certName').textContent = state.name;
+  document.getElementById('certLesson').textContent = data.title;
+  document.getElementById('certGoals').textContent = state.goals;
+  document.getElementById('certAcc').textContent = acc + '%';
+  document.getElementById('certRank').textContent = rank;
+  
+  var today = new Date();
+  var dateStr = today.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric'});
+  document.getElementById('certDate').textContent = dateStr;
+  
+  goToScreen('screen-certificate');
+}
+
+/* ---------- INIT ---------- */
+renderTopics();
+document.addEventListener('click', function(){ ensureAudio(); }, {once: true});
+</script>
+</body>
+</html>
