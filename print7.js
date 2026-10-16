@@ -63,7 +63,7 @@
   /* ═══════════════ 1) دليل المراجعة (صفحتين) ═══════════════ */
   function printStudyGuide(lessonId) {
     var L = G7.lessonById(lessonId);
-    if (!L || !L.guide) { G7.toast('الدرس ده مالوش دليل لسه 😅'); return; }
+    if (!L || !L.guide) { G7.toast('This lesson has no study guide yet.'); return; }
     var g = L.guide;
 
     var rules = '';
@@ -90,7 +90,7 @@
     var html =
       '<div class="pg-sheet">' +
         head('Name: ____________<br>Class: ________ Date: ________') +
-        '<div class="ws-title">📖 STUDY GUIDE · Lesson ' + L.code + '</div>' +
+        '<div class="ws-title">STUDY GUIDE · Lesson ' + L.code + '</div>' +
         '<div class="ws-sub">' + L.title + ' — ' + L.sub + '</div>' +
         '<div class="sg-key"><b>KEY IDEA</b> — ' + g.key + '</div>' +
         (rules ? '<div class="sg-rules">' + rules + '</div>' : '') +
@@ -100,7 +100,7 @@
         head('') +
         '<div class="ws-title">Worked Examples · ' + L.code + '</div>' +
         exs +
-        '<div class="sg-try"><h4>TRY IT YOURSELF ✏️</h4>' + tries +
+        '<div class="sg-try"><h4>TRY IT YOURSELF</h4>' + tries +
         (ans ? '<div class="sg-ans">Check yourself: ' + ans + '</div>' : '') +
         '</div>' +
       '</div>';
@@ -112,7 +112,7 @@
     var L = G7.lessonById(lessonId);
     if (!L) return;
     var qs = genSheet(L, level);
-    if (!qs.length) { G7.toast('مفيش أسئلة متاحة 😅'); return; }
+    if (!qs.length) { G7.toast('No questions available for this lesson yet.'); return; }
 
     var letters = ['A', 'B', 'C', 'D', 'E', 'F'];
 
@@ -131,7 +131,7 @@
       qPages += '<div class="pg-sheet">' +
         head(p === 0 ? 'Name: ____________<br>Class: ________ Date: ________' : '') +
         (p === 0
-          ? '<div class="ws-title">📝 PRACTICE WORKSHEET · ' + L.code + ' ' + L.title + '</div>' +
+          ? '<div class="ws-title">PRACTICE WORKSHEET · ' + L.code + ' ' + L.title + '</div>' +
             '<div class="ws-sub">' + L.sub + ' — Level: ' + (level === 'easy' ? 'Basic' : 'Practice') + ' · 20 Questions</div>'
           : '') +
         '<div class="ws-qgrid">' + grid + '</div>' +
@@ -149,7 +149,7 @@
     }
     var bubSheet = '<div class="pg-sheet">' +
       head('Name: ____________<br>') +
-      '<div class="bub-head">🫧 BUBBLE SHEET — ' + L.code + ' ( shade the letter of your answer )</div>' +
+      '<div class="bub-head">BUBBLE SHEET — ' + L.code + ' ( shade the letter of your answer )</div>' +
       '<div class="bub-grid">' + bub + '</div>' +
     '</div>';
 
@@ -160,7 +160,7 @@
     });
     var keySheet = '<div class="pg-sheet">' +
       head('') +
-      '<div class="bub-head">🔑 ANSWER KEY — ' + L.code + ' ' + L.title + '</div>' +
+      '<div class="bub-head">ANSWER KEY — ' + L.code + ' ' + L.title + '</div>' +
       '<div class="key-grid">' + key + '</div>' +
     '</div>';
 
@@ -176,20 +176,20 @@
       stars += G7.bestStars(L.id);
     });
     if (done < all.length || all.length < 13) {
-      G7.toast('الشهادة بتتفتح بعد إكمال كل الدروس — باقي ' + (all.length - done) + ' 💪');
+      G7.toast('The certificate unlocks after completing every lesson — ' + (all.length - done) + ' to go.');
       return;
     }
     var st2 = '';
     for (var i = 0; i < Math.min(10, Math.round(stars / 3)); i++) st2 += '⭐';
 
     var html = '<div class="pg-sheet"><div class="cert">' +
-      '<div class="c-brand">🧮 AID MATHEMATICS ACADEMY</div>' +
+      '<div class="c-brand">AID MATHEMATICS ACADEMY</div>' +
       '<div class="c-t">CERTIFICATE OF ACHIEVEMENT</div>' +
       '<div class="c-line">This certificate is proudly presented to</div>' +
       '<div class="c-name">' + st.name + '</div>' +
       '<div class="c-line">for outstanding dedication and mastery of<br><b>Grade 7 Mathematics · Topics 1, 4 & 5</b><br>(Operations with Rational Numbers · Equivalent Expressions · Equations & Inequalities)</div>' +
       '<div class="c-stars">' + st2 + '</div>' +
-      '<div class="c-line">Completed ' + done + ' lessons · Final Exam Passed · Coins earned: 🪙 ' + st.coins + '</div>' +
+      '<div class="c-line">Completed ' + done + ' lessons · Final Exam Passed · Coins earned: ' + st.coins + '</div>' +
       '<div class="c-foot">' +
         '<div class="c-sig"><div class="sigline"><b>Mr. Akram</b><br>Math Coach</div></div>' +
         '<div class="c-sig"><div class="sigline"><b>' + today() + '</b><br>Date</div></div>' +

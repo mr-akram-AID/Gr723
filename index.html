@@ -1,99 +1,119 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>AID Mathematics Academy · Grade 7</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AID — Grade 7 Mathematics Academy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Instrument+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<!-- ═══════════════════════ شاشة تسجيل الدخول ═══════════════════════ -->
-<section class="screen active" id="scr-login">
-  <div class="login-box">
-    <div class="logo">🧮 AID <span>Mathematics Academy</span></div>
-    <div class="grade-chip">Grade 7 · Savvas enVision</div>
-    <h1>أهلاً بيك يا بطل! 👋</h1>
-    <p class="login-sub">اكتب اسمك ونبدأ مغامرة الرياضيات 🚀</p>
-    <input id="inp-name" type="text" maxlength="30" placeholder="اسمك هنا..." autocomplete="off">
+<!-- ═══════════ SPLASH ═══════════ -->
+<section class="screen" id="scr-splash">
+  <div class="splash-inner">
+    <div class="logo-block">
+      <div class="logo-word">A<span>I</span>D</div>
+      <div class="logo-tag">Grade 7 Mathematics</div>
+      <div class="logo-rule"><span class="dm"></span></div>
+    </div>
+    <div class="splash-credit">Designed by&nbsp;<b>Mr. Akram</b></div>
+    <button class="btn primary big" id="btn-begin" type="button">Begin</button>
+    <div class="splash-sub">Savvas enVision · Rational Numbers · Equivalent Expressions · Equations &amp; Inequalities</div>
+  </div>
+</section>
+
+<!-- ═══════════ NAME ═══════════ -->
+<section class="screen" id="scr-login">
+  <div class="panel narrow">
+    <div class="eyebrow">Before we begin</div>
+    <h1>Welcome, champion</h1>
+    <p class="muted" style="margin-top:-.3rem; font-size:.9rem">Your name will appear on your results and certificates. Everything is signed by Mr. Akram.</p>
+    <input id="inp-name" class="big-input" maxlength="22" placeholder="Type your name…" autocomplete="off">
     <div id="name-err" class="err-msg"></div>
-    <button class="btn big primary" id="btn-start">يلا نبدأ 🚀</button>
-    <div class="coach-line">الكوتش: مستر أكرم 🎓</div>
+    <div class="row center">
+      <button class="btn primary big" id="btn-start" type="button">Continue</button>
+    </div>
+    <p class="coach-note">Your coach · <b>Mr. Akram</b> — every score goes straight to him.</p>
   </div>
 </section>
 
-<!-- ═══════════════════════ الرئيسية ═══════════════════════ -->
+<!-- ═══════════ TOPICS ═══════════ -->
 <section class="screen" id="scr-home">
-  <header class="bar">
-    <div class="logo sm">🧮 AID</div>
-    <div class="chips">
-      <span class="chip" id="chip-name">👤</span>
-      <span class="chip gold" id="chip-coins">🪙 0</span>
-    </div>
-    <div class="bar-btns">
-      <button class="icon-btn" id="btn-sound" title="الصوت">🔊</button>
-      <button class="icon-btn" id="btn-stats" title="تقدمي">📊</button>
-      <button class="icon-btn" id="btn-print" title="طباعة">🖨️</button>
-      <button class="icon-btn" id="btn-logout" title="تغيير الاسم">✏️</button>
-    </div>
-  </header>
   <div class="wrap">
-    <h2 class="pg-title">اختر التوبك بتاعك 📚</h2>
+    <div class="hub-head">
+      <div>
+        <div class="eyebrow" id="topics-hello">Welcome</div>
+        <h1>Choose Your Topic</h1>
+      </div>
+      <div class="hub-actions">
+        <button class="btn ghost small" id="btn-stats" type="button">My Statistics</button>
+        <button class="btn ghost small" id="btn-print" type="button">Print Center</button>
+        <button class="btn ghost small" id="btn-sound" type="button">Sound · On</button>
+        <button class="btn ghost small" id="btn-logout" type="button">Change Name</button>
+      </div>
+    </div>
     <div id="topics-list"></div>
-    <h2 class="pg-title">الامتحانات 🏆</h2>
+    <div class="ms-head">
+      <div class="eyebrow">Milestones</div>
+      <h2 style="margin-bottom:.3rem">Checkpoints &amp; Final Exam</h2>
+      <p class="muted" style="font-size:.88rem">Every 5 lessons a 20-question checkpoint covers exactly those lessons — no hints there, just like the real paper. The Final covers everything.</p>
+    </div>
     <div id="exams-list"></div>
+    <div class="hub-progress" id="topics-progress"></div>
   </div>
 </section>
 
-<!-- ═══════════════════════ دروس التوبك ═══════════════════════ -->
+<!-- ═══════════ TOPIC LESSONS ═══════════ -->
 <section class="screen" id="scr-topic">
-  <header class="bar">
-    <button class="icon-btn" id="btn-back-home">🏠</button>
-    <div class="q-meta">
-      <div class="qz-title" id="tp-title"></div>
-      <div class="qz-sub" id="tp-sub"></div>
-    </div>
-    <span class="chip gold" id="tp-coins">🪙 0</span>
-  </header>
   <div class="wrap">
+    <div class="hub-head">
+      <div>
+        <div class="eyebrow">Training Path</div>
+        <h1 id="tp-title" style="font-size:clamp(1.5rem,3.4vw,2.1rem)"></h1>
+        <p class="muted" id="tp-sub" style="font-size:.9rem"></p>
+      </div>
+      <button class="btn ghost small" id="btn-back-home" type="button">&#8592;&nbsp; All Topics</button>
+    </div>
     <div id="lessons-list"></div>
+    <div class="hub-progress" id="tp-progress"></div>
   </div>
 </section>
 
-<!-- ═══════════════════════ شاشة الكويز ═══════════════════════ -->
+<!-- ═══════════ QUIZ ═══════════ -->
 <section class="screen" id="scr-quiz">
-  <header class="bar">
-    <button class="icon-btn" id="btn-quit">🏠</button>
+  <div class="quiz-wrap">
     <div class="q-meta">
-      <div class="qz-title" id="qz-title"></div>
-      <div class="qz-sub" id="qz-sub"></div>
+      <span class="chip" id="qz-title"></span>
+      <span class="chip plain" id="qz-sub"></span>
+      <span class="chip plain" id="qz-count">1/20</span>
+      <span class="chip plain" id="qz-timer">00:00</span>
+      <span class="chip plain" id="qz-coins">&#9679; 0</span>
+      <div class="q-progress"><div class="q-progress-fill" id="qz-pfill"></div></div>
     </div>
-    <div class="chips">
-      <span class="chip" id="qz-count">1/20</span>
-      <span class="chip" id="qz-timer">⏱ 0:00</span>
-      <span class="chip gold" id="qz-coins">🪙 0</span>
+    <div class="q-card">
+      <div class="qnum" id="qz-num">Question 1</div>
+      <div class="qtext" id="qz-q"></div>
+      <div id="qz-choices" class="choices"></div>
+      <div class="q-actions">
+        <div id="hint-ladder" class="ladder">
+          <button class="lad-btn" data-l="0" title="Strategy hint">&#129517; Strategy</button>
+          <button class="lad-btn" data-l="1" title="Steps hint">&#128099; Steps</button>
+          <button class="lad-btn" data-l="2" title="Reveal the shape of the answer">&#128506;&#65039; Reveal</button>
+        </div>
+        <button class="btn ghost" id="btn-quit" type="button">End Early</button>
+      </div>
+      <div id="calc-chip" class="calc-chip hidden">Calculator is allowed in this lesson.</div>
+      <div id="hint-box" class="hintbox hidden"></div>
+      <div id="fb-box" class="fb hidden"></div>
+      <button id="btn-next" class="btn primary big hidden">Next Question &#8594;</button>
     </div>
-  </header>
-  <div class="wrap quiz-wrap">
-    <div class="pbar"><div id="qz-pfill"></div></div>
-    <div id="calc-chip" class="calc-chip hidden">🖩 الآلة الحاسبة مسموحة في الدرس ده</div>
-    <div class="qcard">
-      <div class="qnum" id="qz-num"></div>
-      <div class="qtext" id="qz-q" dir="ltr"></div>
-    </div>
-    <div id="qz-choices" class="choices"></div>
-    <div id="hint-ladder" class="ladder">
-      <button class="lad-btn" data-l="0" title="تلميح استراتيجية">🧭</button>
-      <button class="lad-btn" data-l="1" title="تلميح خطوات">👣</button>
-      <button class="lad-btn" data-l="2" title="تلميح أخير">🗺️</button>
-    </div>
-    <div id="hint-box" class="hintbox hidden"></div>
-    <div id="fb-box" class="fb hidden"></div>
-    <button id="btn-next" class="btn big primary hidden">السؤال اللي بعده ➡️</button>
   </div>
 </section>
 
-<!-- ═══════════════════════ النتيجة ═══════════════════════ -->
+<!-- ═══════════ RESULT ═══════════ -->
 <section class="screen" id="scr-result">
   <div class="wrap">
     <div class="res-card" id="res-card">
@@ -102,82 +122,84 @@
       <div class="res-msg" id="res-msg"></div>
       <div class="res-nums" id="res-nums"></div>
       <div class="res-btns">
-        <button class="btn primary" id="btn-retry">🔁 إعادة الدرس</button>
-        <button class="btn success" id="btn-next-l">➡️ الدرس الجاي</button>
-        <button class="btn" id="btn-sheet">🖨️ ورقة تدريب</button>
-        <button class="btn ghost" id="btn-home2">🏠 الرئيسية</button>
+        <button class="btn primary" id="btn-retry">Retry — new questions</button>
+        <button class="btn gold" id="btn-next-l">Next Lesson &#8594;</button>
+        <button class="btn ghost" id="btn-sheet">Practice Sheet</button>
+        <button class="btn ghost" id="btn-home2">All Topics</button>
       </div>
     </div>
-    <h2 class="pg-title" id="rev-title">مراجعة الغلطات 💡</h2>
+    <h2 class="pg-title" id="rev-title">Exactly Where You Slipped</h2>
     <div id="res-review"></div>
   </div>
 </section>
 
-<!-- ═══════════════════════ الطباعة ═══════════════════════ -->
-<section class="screen" id="scr-print">
-  <header class="bar">
-    <button class="icon-btn" id="btn-print-back">🏠</button>
-    <div class="q-meta"><div class="qz-title">🖨️ مركز الطباعة</div></div>
-  </header>
+<!-- ═══════════ STATS ═══════════ -->
+<section class="screen" id="scr-stats">
   <div class="wrap">
+    <div class="hub-head">
+      <div>
+        <div class="eyebrow">My Statistics</div>
+        <h1>Progress Report</h1>
+      </div>
+      <button class="btn ghost small" id="btn-stats-back" type="button">&#8592;&nbsp; All Topics</button>
+    </div>
+    <div id="stats-body"></div>
+  </div>
+</section>
+
+<!-- ═══════════ PRINT CENTER ═══════════ -->
+<section class="screen" id="scr-print">
+  <div class="wrap">
+    <div class="hub-head">
+      <div>
+        <div class="eyebrow">Print Center</div>
+        <h1>Study Materials</h1>
+      </div>
+      <button class="btn ghost small" id="btn-print-back" type="button">&#8592;&nbsp; All Topics</button>
+    </div>
     <div class="print-note">
-      اطبع لكل درس: <b>دليل مراجعة ملون</b> صفحتين · <b>ورقة تدريب</b> فيها مكان للحل + ورقة فقاعات + مفتاح إجابات · و<b>الشهادة</b> لما تخلص المنهج 🏅
+      For every lesson print: a <b>two-page study guide</b> · a <b>practice worksheet</b> with workspace, bubble sheet and answer key. The <b>certificate</b> unlocks when the whole course is complete.
     </div>
     <div id="print-lessons"></div>
     <div class="cert-box">
-      <button class="btn big gold" id="btn-cert">🏅 اطبع الشهادة</button>
+      <button class="btn big gold" id="btn-cert">Print Certificate</button>
       <div class="cert-hint" id="cert-hint"></div>
     </div>
   </div>
 </section>
 
-<!-- ═══════════════════════ التقدم ═══════════════════════ -->
-<section class="screen" id="scr-stats">
-  <header class="bar">
-    <button class="icon-btn" id="btn-stats-back">🏠</button>
-    <div class="q-meta"><div class="qz-title">📊 تقدمي</div></div>
-    <span class="chip gold" id="st-coins">🪙 0</span>
-  </header>
-  <div class="wrap">
-    <div id="stats-body"></div>
-  </div>
-</section>
-
-<!-- ═══════════════════════ منطقة الطباعة (مش بتظهر على الشاشة) ═══════════════════════ -->
+<!-- ═══════════ PRINT AREA (hidden on screen) ═══════════ -->
 <div id="print-area"></div>
 
-<!-- ═══════════════════════ تنبيه + منبّه الإقلاع ═══════════════════════ -->
+<!-- ═══════════ TOAST + MODAL + BOOT ALARM ═══════════ -->
 <div id="toast" class="toast hidden"></div>
 <div id="modal" class="modal hidden">
   <div class="modal-box">
     <div id="modal-txt"></div>
     <div class="modal-btns">
-      <button class="btn danger" id="modal-yes">أيوة</button>
-      <button class="btn ghost" id="modal-no">خليني أكمل</button>
+      <button class="btn danger" id="modal-yes">Yes, leave</button>
+      <button class="btn ghost" id="modal-no">Keep going</button>
     </div>
   </div>
 </div>
 <div id="alarm" class="alarm hidden">
   <div class="alarm-box">
-    <div class="alarm-ico">🚨</div>
-    <h2>المنصة مش حالّة صح!</h2>
-    <p>في ملف من ملفات الجافاسكريبت مش واصل أو فيه خطأ في النسخ. اعمل الآتي:</p>
+    <div class="alarm-ico">&#128680;</div>
+    <h2>The platform did not start correctly</h2>
+    <p>One of the JavaScript files is missing or was copied incompletely. Do this:</p>
     <ol>
-      <li>تأكد إن الملفات دي كلها جنب بعض في نفس المكان: <b>index.html · style.css · engine.js · print7.js · t1.js · t4.js · t5.js · breaks.js · sheet7.js</b></li>
-      <li>افتح كل ملف واعمل <b>Ctrl+End</b> — لازم آخر سطر يبقى <b dir="ltr">})();</b> أو <b dir="ltr">);</b> أو <b dir="ltr">&lt;/html&gt;</b></li>
-      <li>لو سطر ناقص أو الكود مقطوع، انسخ الملف تاني من الأول</li>
-      <li>احفظ بصيغة <b>UTF-8</b> (Save As ← Encoding)</li>
+      <li>Make sure these files sit together in the same folder: <b>index.html · style.css · engine.js · print7.js · t1.js · t4.js · t5.js · breaks.js · sheet7.js</b></li>
+      <li>Open each file and press <b>Ctrl+End</b> — the last line must be <b>})();</b> or <b>);</b> or <b>&lt;/html&gt;</b></li>
+      <li>If a line is missing or the code is cut, copy that file again from the start</li>
+      <li>Save every file as <b>UTF-8</b> (Save As &#8592; Encoding)</li>
     </ol>
   </div>
 </div>
 
 <noscript>
-  <div style="padding:20px;text-align:center;font-size:20px;color:#b91c1c;background:#fee2e2">
-    لازم تفتح المنصة من متصفح عادي (Chrome / Edge / Safari) — الجافاسكريبت مقفول عندك 🙏
-  </div>
+  <div class="noscript-box">Please open the platform in a normal browser (Chrome / Edge / Safari) — JavaScript is disabled here.</div>
 </noscript>
 
-<!-- منبّه الإقلاع: يفحص إن المحرك اشتغل فعلاً -->
 <script>
 window.addEventListener('load', function(){
   setTimeout(function(){

@@ -51,7 +51,7 @@
   var T1 = {
     id: 't1', num: 1, icon: '🧮', color: '#0d9488',
     title: 'Integer and Rational Number Operations',
-    sub: 'ضرب وقسمة الأعداد الصحيحة والنسبية',
+    sub: 'Multiplying and dividing integers and rational numbers',
     lessons: []
   };
 

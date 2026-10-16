@@ -72,7 +72,7 @@
   var T5 = {
     id: 't5', num: 5, icon: '⚖️', color: '#ea580c',
     title: 'Solve Problems Using Equations & Inequalities',
-    sub: 'كتابة وحل المعادلات والمتباينات خطوة بخطوة',
+    sub: 'Writing and solving equations and inequalities step by step',
     lessons: []
   };
 

@@ -49,7 +49,7 @@
   var T4 = {
     id: 't4', num: 4, icon: '🧩', color: '#7c3aed',
     title: 'Generate Equivalent Expressions',
-    sub: 'كتابة وتبسيط وتوسيع وتحليل التعبيرات الجبرية',
+    sub: 'Writing, simplifying, expanding and factoring algebraic expressions',
     lessons: []
   };
 

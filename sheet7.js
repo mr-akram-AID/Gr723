@@ -42,8 +42,8 @@
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(payload)
       })
-        .then(function () { G7.toast('📤 النتيجة اترسلت لمستر أكرم'); })
-        .catch(function () { G7.toast('📝 النتيجة اتسجلت محلياً (الإرسال هيحصل لما النت يتظبط)'); });
+        .then(function () { G7.toast('📤 Score sent to Mr. Akram'); })
+        .catch(function () { G7.toast('📝 Saved locally — will send once you are back online'); });
     } catch (e) { /* سكوت — ممنوع نعطّل الكويز */ }
   }
 

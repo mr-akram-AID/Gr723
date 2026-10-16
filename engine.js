@@ -1,13 +1,14 @@
 /* ============================================================
    AID Mathematics Academy · Grade 7 — engine.js
-   المحرك: كويز 20 سؤال · سلّم هنت 3 مستويات (ال third auto-mask)
-   تشخيص كل إجابة غلط · Checkpoints + Final · نتائج · أصوات · تقدم
-   ملفات المحتوى (t1.js / t4.js / t5.js) بتتسجل هنا.
+   Core engine: 20-question quizzes · 3-level hint ladder ·
+   per-answer diagnostics · Checkpoints + Final · results ·
+   sounds · progress. Content files (t1.js / t4.js / t5.js)
+   register their topics here.
    ============================================================ */
 var G7 = (function () {
   'use strict';
 
-  /* ═══════════════ أدوات عامة ═══════════════ */
+  /* ═══════════════ helpers ═══════════════ */
   function $(id) { return document.getElementById(id); }
   function qsAll(sel) { return Array.prototype.slice.call(document.querySelectorAll(sel)); }
   function el(tag, cls, html) {
@@ -29,7 +30,7 @@ var G7 = (function () {
   function esc(s) {
     return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
-  /* قناع الإجابة: الأرقام ● والحروف ▢ — الطالب يشكل الشكل النهائي */
+  /* answer mask: digits become ● and letters ▢ — the student shapes the final answer */
   function mask(s) {
     return String(s).replace(/[0-9]/g, '●').replace(/[a-zA-Z]/g, '▢');
   }
@@ -38,7 +39,7 @@ var G7 = (function () {
     return m + ':' + (s < 10 ? '0' : '') + s;
   }
 
-  /* ═══════════════ ناقل أحداث (لsheet7 و print7) ═══════════════ */
+  /* ═══════════════ event bus (for sheet7 / print7) ═══════════════ */
   var EV = {};
   function on(k, fn) { (EV[k] = EV[k] || []).push(fn); }
   function emit(k, d) {
@@ -46,7 +47,7 @@ var G7 = (function () {
     for (var i = 0; i < list.length; i++) { try { list[i](d); } catch (e) {} }
   }
 
-  /* ═══════════════ سجل التوبكات ═══════════════ */
+  /* ═══════════════ topic registry ═══════════════ */
   var TOPICS = [];
   function registerTopic(t) {
     if (!t || !t.id || !t.lessons || !t.lessons.length) return;
@@ -67,17 +68,18 @@ var G7 = (function () {
     return null;
   }
 
-  /* ═══════════════ الحالة (localStorage) ═══════════════ */
-  var LSKEY = 'G7V1';
+  /* ═══════════════ state (localStorage) ═══════════════ */
+  var LSKEY = 'G7V2';
   var ST = { name: '', sound: true, coins: 0, lessons: {}, exams: {} };
   function save() { try { localStorage.setItem(LSKEY, JSON.stringify(ST)); } catch (e) {} }
   function load() {
     try {
       var raw = localStorage.getItem(LSKEY);
+      if (!raw && localStorage.getItem('G7V1')) raw = localStorage.getItem('G7V1');
       if (raw) {
         var o = JSON.parse(raw);
         if (o && o.name !== undefined) {
-          /* ننقل داخل نفس الكائن — عشان G7.state يفضل مرجع حي بعد أي تحديث للصفحة */
+          /* copy into the same object — G7.state stays a live reference */
           var k;
           for (k in ST) { if (Object.prototype.hasOwnProperty.call(ST, k)) delete ST[k]; }
           for (k in o) { if (Object.prototype.hasOwnProperty.call(o, k)) ST[k] = o[k]; }
@@ -98,7 +100,7 @@ var G7 = (function () {
     return n;
   }
 
-  /* ═══════════════ الأصوات (Web Audio) ═══════════════ */
+  /* ═══════════════ sounds (Web Audio) ═══════════════ */
   var AC = null;
   function ac() {
     if (!AC) { try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} }
@@ -126,14 +128,14 @@ var G7 = (function () {
     win:  function () { tone(523, .14, 'triangle', 0, .1); tone(659, .14, 'triangle', .12, .1); tone(784, .14, 'triangle', .24, .1); tone(1047, .22, 'triangle', .36, .12); }
   };
 
-  /* ═══════════════ تنقّل الشاشات ═══════════════ */
+  /* ═══════════════ screen navigation ═══════════════ */
   function show(id) {
     qsAll('.screen').forEach(function (s) { s.classList.remove('active'); });
     $(id).classList.add('active');
     window.scrollTo(0, 0);
   }
 
-  /* ═══════════════ توست + مودال ═══════════════ */
+  /* ═══════════════ toast + modal ═══════════════ */
   var toastTO = null;
   function toast(msg) {
     var t = $('toast');
@@ -148,35 +150,43 @@ var G7 = (function () {
     $('modal').classList.remove('hidden');
   }
 
-  /* ═══════════════ الامتحانات ═══════════════ */
+  /* ═══════════════ exams ═══════════════ */
   var EXAMS = [
-    { id: 'cp1', ico: '🎯', title: 'Checkpoint 1', need: 5,  from: 0,  len: 5, perLesson: 3, sub: 'الدروس 1 → 5 (Topic 1)' },
-    { id: 'cp2', ico: '🎯', title: 'Checkpoint 2', need: 10, from: 5,  len: 5, perLesson: 3, sub: 'الدروس 6 → 10 (Topic 4)' },
-    { id: 'cp3', ico: '🎯', title: 'Checkpoint 3', need: 15, from: 10, len: 5, perLesson: 3, sub: 'الدروس 11 → 15' },
-    { id: 'fin', ico: '🏆', title: 'Final Exam',    need: 20, from: 0,  len: 0,  perLesson: 2, sub: 'المنهج كله — 30 سؤال' }
+    { id: 'cp1', ico: '🎯', title: 'Checkpoint 1', need: 5,  from: 0,  len: 5, perLesson: 3, sub: 'Lessons 1–5 · Rational Numbers' },
+    { id: 'cp2', ico: '🎯', title: 'Checkpoint 2', need: 10, from: 5,  len: 5, perLesson: 3, sub: 'Lessons 6–10 · Equivalent Expressions' },
+    { id: 'cp3', ico: '🎯', title: 'Checkpoint 3', need: 15, from: 10, len: 5, perLesson: 3, sub: 'Lessons 11–15 · Expressions & Equations' },
+    { id: 'fin', ico: '🏆', title: 'Final Exam',    need: 20, from: 0,  len: 0,  perLesson: 2, sub: 'The whole course · 30 questions' }
   ];
 
-  /* ═══════════════ شاشة الدخول ═══════════════ */
+  /* ═══════════════ splash + name ═══════════════ */
   function initLogin() {
-    if (ST.name) { goHome(); return; }
-    show('scr-login');
+    show('scr-splash');
+    $('btn-begin').onclick = function () {
+      sfx.ok();
+      if (ST.name) { goHome(); return; }
+      show('scr-login');
+    };
     $('btn-start').onclick = function () {
       var n = $('inp-name').value.trim();
-      if (n.length < 2) { $('name-err').textContent = 'اكتب اسم كامل شوية يا نجم 😊'; return; }
+      if (n.length < 2) {
+        $('name-err').textContent = 'Please write your full name, champion.';
+        $('inp-name').classList.add('shake');
+        setTimeout(function () { $('inp-name').classList.remove('shake'); }, 400);
+        return;
+      }
       $('name-err').textContent = '';
       ST.name = n; save(); goHome();
-      toast('أهلاً يا ' + esc(n) + '! 🌟');
+      toast('Welcome, ' + esc(n) + '! 🌟');
     };
     $('inp-name').onkeydown = function (e) { if (e.key === 'Enter') $('btn-start').click(); };
   }
 
-  /* ═══════════════ الرئيسية ═══════════════ */
+  /* ═══════════════ home ═══════════════ */
   function goHome() { SES = killTimer(SES); renderHome(); show('scr-home'); }
 
   function renderHome() {
-    $('chip-name').textContent = '👤 ' + ST.name;
-    $('chip-coins').textContent = '🪙 ' + ST.coins;
-    $('btn-sound').textContent = ST.sound ? '🔊' : '🔇';
+    $('topics-hello').textContent = 'Welcome, ' + ST.name;
+    $('btn-sound').textContent = ST.sound ? 'Sound · On' : 'Sound · Off';
 
     var box = $('topics-list'); box.innerHTML = '';
 
@@ -186,39 +196,41 @@ var G7 = (function () {
       pct = total ? Math.round(done / total * 100) : 0;
 
       var card = el('div', 'topic-card');
-      card.style.setProperty('--tc', t.color);
       card.innerHTML =
         '<div class="tc-head">' +
           '<div class="tc-num">' + t.icon + '</div>' +
           '<div class="tc-info">' +
             '<div class="tc-title">Topic ' + t.num + ' · ' + esc(t.title) + '</div>' +
-            '<div class="tc-sub">' + esc(t.sub) + ' — ' + total + ' دروس</div>' +
+            '<div class="tc-sub">' + esc(t.sub) + ' — ' + total + ' lessons</div>' +
           '</div>' +
           '<div class="lr-stars">' + starsHTML(pct) + '</div>' +
         '</div>' +
         '<div class="tc-prog"><div class="pbar"><div style="width:' + pct + '%"></div></div>' +
-        '<div class="tc-pct">' + done + '/' + total + ' دروس مكتملة</div></div>';
+        '<div class="tc-pct">' + done + '/' + total + ' complete</div></div>';
       card.onclick = function () { openTopic(t); };
       box.appendChild(card);
     });
 
-    /* كارت Topic 5 المقفول — بختفي لوحده لما t5.js يوصل */
+    /* locked Topic 5 card — disappears by itself once t5.js loads */
     var has5 = TOPICS.some(function (t) { return t.num === 5; });
     if (!has5) {
       var lk = el('div', 'topic-card locked');
-      lk.style.setProperty('--tc', '#ea580c');
       lk.innerHTML =
         '<div class="tc-head">' +
           '<div class="tc-num">🔒</div>' +
           '<div class="tc-info">' +
             '<div class="tc-title">Topic 5 · Solve Problems Using Equations</div>' +
-            '<div class="tc-sub">جاي قريباً 🚀 الجزء الجاي من المنصة</div>' +
+            '<div class="tc-sub">Coming soon — the next part of the platform</div>' +
           '</div>' +
         '</div>';
       box.appendChild(lk);
     }
 
     renderExams();
+
+    var all = allLessons(), comp = lessonsCompleted();
+    $('topics-progress').innerHTML = 'Course progress · <b>' + comp + '/' + all.length +
+      '</b> lessons completed · <b>' + ST.coins + '</b> coins earned';
   }
 
   function starsHTML(pct) {
@@ -238,14 +250,14 @@ var G7 = (function () {
       card.innerHTML =
         '<div class="exam-ico">' + ex.ico + '</div>' +
         '<div class="exam-info">' +
-          '<div class="exam-title">' + esc(ex.title) + '</div>' +
-          '<div class="exam-sub">' + esc(ex.sub) +
-            (unlocked ? (best ? ' · <span class="exam-best">أحسن نتيجة: ' + best + '%</span>' : '') : '') +
-          '</div>' +
+          '<b>' + esc(ex.title) + '</b>' +
+          '<span>' + esc(ex.sub) +
+            (unlocked ? (best ? ' · <span class="exam-best">Best: ' + best + '%</span>' : '') : '') +
+          '</span>' +
         '</div>' +
         (unlocked
-          ? '<button class="btn primary exam">ابدأ 🚀</button>'
-          : '<span class="chip">🔒 باقي ' + (ex.need - comp) + ' دروس</span>');
+          ? '<button class="btn primary">Start</button>'
+          : '<span class="lock-note">Locked · ' + (ex.need - comp) + ' more lessons</span>');
       if (unlocked) {
         card.querySelector('button').onclick = function () { startExam(ex); };
       }
@@ -253,14 +265,16 @@ var G7 = (function () {
     });
   }
 
-  /* ═══════════════ شاشة التوبك ═══════════════ */
+  /* ═══════════════ topic screen ═══════════════ */
   var CURT = null;
   function openTopic(t) {
     CURT = t;
     $('tp-title').textContent = 'Topic ' + t.num + ' · ' + t.title;
     $('tp-sub').textContent = t.sub;
-    $('tp-coins').textContent = '🪙 ' + ST.coins;
     var box = $('lessons-list'); box.innerHTML = '';
+
+    var done = 0;
+    t.lessons.forEach(function (L) { if (bestStars(L.id) > 0) done++; });
 
     t.lessons.forEach(function (L) {
       var row = el('div', 'lesson-row');
@@ -268,30 +282,33 @@ var G7 = (function () {
       row.innerHTML =
         '<div class="lr-head">' +
           '<span class="lr-code">' + esc(L.code) + '</span>' +
-          '<div style="flex:1">' +
+          '<div class="lr-mid">' +
             '<div class="lr-title">' + esc(L.title) + '</div>' +
             '<div class="lr-sub">' + esc(L.sub) + '</div>' +
           '</div>' +
           '<span class="lr-stars">' + (st ? '⭐'.repeat(st) : '') + '</span>' +
         '</div>' +
         '<div class="lr-btns">' +
-          '<button class="btn lvl easy">🌱 سهل</button>' +
-          '<button class="btn lvl med">🔥 متوسط</button>' +
-          '<button class="btn lvl guide">📖 الدليل</button>' +
+          '<button class="btn ghost lvl easy">🌱 Easy</button>' +
+          '<button class="btn ghost lvl med">🔥 Medium</button>' +
+          '<button class="btn ghost lvl guide">📖 Guide</button>' +
         '</div>';
       var btns = row.querySelectorAll('button');
       btns[0].onclick = function () { startLesson(L, 'easy'); };
       btns[1].onclick = function () { startLesson(L, 'medium'); };
       btns[2].onclick = function () {
         if (G7.printStudyGuide) G7.printStudyGuide(L.id);
-        else toast('ملف الطباعة print7.js مش واصل 🙈');
+        else toast('Print module did not load.');
       };
       box.appendChild(row);
     });
+
+    $('tp-progress').innerHTML = 'Topic progress · <b>' + done + '/' + t.lessons.length +
+      '</b> lessons completed · <b>' + ST.coins + '</b> coins earned';
     show('scr-topic');
   }
 
-  /* ═══════════════ بناء أسئلة الجلسة ═══════════════ */
+  /* ═══════════════ build session questions ═══════════════ */
   function buildQs(L, level, n, strict) {
     var out = [], seen = {}, guard = 0;
     while (out.length < n && guard < 600) {
@@ -316,7 +333,7 @@ var G7 = (function () {
     return { q: q.q, choices: arr, a: a, diag: diag, steps: q.steps || [], ok: okTxt };
   }
 
-  /* ═══════════════ الجلسة ═══════════════ */
+  /* ═══════════════ session ═══════════════ */
   var SES = null;
 
   function startLesson(L, level) {
@@ -325,7 +342,7 @@ var G7 = (function () {
       var more = buildQs(L, level, 20 - qs.length, false);
       qs = qs.concat(more);
     }
-    if (!qs.length) { toast('الدرس ده لسه بيتجهز 😅'); return; }
+    if (!qs.length) { toast('This lesson is still being prepared.'); return; }
 
     SES = {
       kind: 'lesson', lesson: L, level: level, qs: qs,
@@ -333,7 +350,7 @@ var G7 = (function () {
       wrongs: [], t0: Date.now(), pausedMs: 0, pausedAt: null,
       locked: false, hintLv: 0, timer: null
     };
-    quizHead(L.code + ' · ' + L.title, level === 'easy' ? '🌱 المستوى السهل' : '🔥 المستوى المتوسط', L);
+    quizHead(L.code + ' · ' + L.title, level === 'easy' ? '🌱 Easy' : '🔥 Medium', L);
     startTimer();
     renderQ();
     show('scr-quiz');
@@ -350,7 +367,7 @@ var G7 = (function () {
       var med = buildQs(L, 'medium', per - 1, true);
       qs = qs.concat(med);
     });
-    if (!qs.length) { toast('الامتحان لسه بيتجهز 😅'); return; }
+    if (!qs.length) { toast('The exam is still being prepared.'); return; }
     qs = shuffle(qs);
     if (ex.id === 'fin' && qs.length > 30) qs = qs.slice(0, 30);
 
@@ -360,7 +377,7 @@ var G7 = (function () {
       wrongs: [], t0: Date.now(), pausedMs: 0, pausedAt: null,
       locked: false, hintLv: 0, timer: null
     };
-    quizHead(ex.ico + ' ' + ex.title, 'امتحان · ' + qs.length + ' سؤال', null);
+    quizHead(ex.ico + ' ' + ex.title, 'Exam · ' + qs.length + ' questions', null);
     startTimer();
     renderQ();
     show('scr-quiz');
@@ -373,15 +390,17 @@ var G7 = (function () {
     if (L && L.calc) { cc.classList.remove('hidden'); } else { cc.classList.add('hidden'); }
     var lad = $('hint-ladder');
     if (SES && SES.kind === 'exam') lad.classList.add('hidden'); else lad.classList.remove('hidden');
+    var ts = $('qz-timer'); ts.textContent = '0:00';
+    var subEl = $('qz-count'); subEl.textContent = '1/' + (SES ? SES.qs.length : 20);
   }
 
-  /* المؤقت */
+  /* timer */
   function startTimer() {
     killTimer(SES);
     if (!SES) return;
     SES.timer = setInterval(function () {
       if (!SES || SES.pausedAt) return;
-      $('qz-timer').textContent = '⏱ ' + fmtT(elapsed());
+      $('qz-timer').textContent = fmtT(elapsed());
     }, 500);
   }
   function killTimer(s) {
@@ -397,14 +416,14 @@ var G7 = (function () {
     if (SES && SES.pausedAt) { SES.pausedMs += Date.now() - SES.pausedAt; SES.pausedAt = null; }
   }
 
-  /* ═══════════════ عرض السؤال ═══════════════ */
+  /* ═══════════════ render question ═══════════════ */
   function renderQ() {
     var q = SES.qs[SES.i];
     SES.locked = false; SES.hintLv = 0;
 
     $('qz-count').textContent = (SES.i + 1) + '/' + SES.qs.length;
     $('qz-pfill').style.width = (SES.i / SES.qs.length * 100) + '%';
-    $('qz-num').textContent = 'سؤال ' + (SES.i + 1);
+    $('qz-num').textContent = 'Question ' + (SES.i + 1);
     $('qz-q').innerHTML = q.q;
 
     var box = $('qz-choices'); box.innerHTML = '';
@@ -422,9 +441,10 @@ var G7 = (function () {
 
     var ladBtns = qsAll('.lad-btn');
     for (var i = 0; i < ladBtns.length; i++) { ladBtns[i].disabled = false; }
+    updCoins();
   }
 
-  /* ═══════════════ الإجابة والتشخيص ═══════════════ */
+  /* ═══════════════ answer + diagnosis ═══════════════ */
   function answer(idx, btn) {
     if (!SES || SES.locked) return;
     SES.locked = true;
@@ -433,7 +453,7 @@ var G7 = (function () {
     var okk = idx === q.a;
     var i;
 
-    /* الهنت بيتقفل بعد الإجابة — خلص وقت الاستعانة */
+    /* hints close after answering */
     var lads = qsAll('.lad-btn');
     for (i = 0; i < lads.length; i++) { lads[i].disabled = true; }
 
@@ -458,20 +478,20 @@ var G7 = (function () {
     }
     updCoins();
 
-    /* صندوق الفيدباك + التشخيص */
+    /* feedback + diagnosis */
     var fb = $('fb-box');
     var html = '<div class="fb-head">' + (okk
-      ? '✅ برافو' + (SES.streak >= 3 ? ' 🔥 سلسلة ' + SES.streak + '!' : '!')
-      : '❌ مش دي — بس شوف فين وقعت بالظبط:') + '</div>';
+      ? '✅ Correct' + (SES.streak >= 3 ? ' — streak of ' + SES.streak + '! 🔥' : '!')
+      : '❌ Not this one — here is exactly where you slipped:') + '</div>';
 
     if (!okk) {
       if (q.diag[q.choices[idx]]) {
         html += '<div class="diag"><b>🎯 Exactly Where You Slipped:</b> ' + q.diag[q.choices[idx]] + '</div>';
       }
-      html += '<div class="diag" style="border-right-color:#16a34a"><b>✅ الصح:</b> ' + q.ok + '</div>';
+      html += '<div class="diag" style="border-left:3px solid var(--good); padding-left:.8rem; margin-top:.6rem"><b>✅ The right answer:</b> ' + q.ok + '</div>';
     }
     if (q.steps && q.steps.length) {
-      html += '<div class="stepsbox"><div class="st-t">الطريقة الصح خطوة بخطوة:</div><ol>';
+      html += '<div class="stepsbox"><div class="st-t">The right way, step by step:</div><ol>';
       for (i = 0; i < q.steps.length; i++) html += '<li>' + q.steps[i] + '</li>';
       html += '</ol></div>';
     }
@@ -479,14 +499,14 @@ var G7 = (function () {
     fb.className = 'fb ' + (okk ? 'okk' : 'badd');
     fb.classList.remove('hidden');
 
-    $('btn-next').innerHTML = (SES.i + 1 >= SES.qs.length) ? '🏁 شوف نتيجتك' : 'السؤال اللي بعده ➡️';
+    $('btn-next').innerHTML = (SES.i + 1 >= SES.qs.length) ? '🏁 See your result' : 'Next Question &#8594;';
     $('btn-next').classList.remove('hidden');
     $('btn-next').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
-  function updCoins() { $('qz-coins').textContent = '🪙 ' + SES.coins; }
+  function updCoins() { if (SES) $('qz-coins').textContent = '🪙 ' + SES.coins; }
 
-  /* ═══════════════ سلّم الهنت 🧭👣🗺️ ═══════════════ */
+  /* ═══════════════ hint ladder 🧭👣🗺️ ═══════════════ */
   function hint(lv) {
     if (!SES || SES.locked || SES.kind === 'exam') return;
     var ladder = qsAll('.lad-btn');
@@ -496,24 +516,24 @@ var G7 = (function () {
     sfx.hint();
 
     var L = SES.lesson, txt = '';
-    if (lv === 0) txt = (L && L.hintA) || '🧭 اقرا السؤال ببطء وحد المطلوب الأول.';
-    if (lv === 1) txt = (L && L.hintB) || '👣 نفّذ الخطوات بالترتيب — واحدة واحدة.';
+    if (lv === 0) txt = (L && L.hintA) || '🧭 Read the question slowly and identify exactly what is asked first.';
+    if (lv === 1) txt = (L && L.hintB) || '👣 Carry out the steps in order — one at a time.';
     if (lv === 2) {
       txt = (L && L.hintC) ||
-        ('🗺️ الإجابة شكلها كده: <b dir="ltr">' + mask(SES.qs[SES.i].ok) + '</b> — دوّر عليها بين الاختيارات.');
+        ('🗺️ The answer looks like this: <b>' + mask(SES.qs[SES.i].ok) + '</b> — find it among the choices.');
     }
     var hb = $('hint-box');
-    hb.innerHTML += '<div class="h-row"><span class="h-lvl">تلميح ' + (lv + 1) + '</span>' + txt + '</div>';
+    hb.innerHTML += '<div class="h-row"><span class="h-lvl">Hint ' + (lv + 1) + '</span>' + txt + '</div>';
     hb.classList.remove('hidden');
   }
 
-  /* ═══════════════ السؤال اللي بعده + بريك اللعبة ═══════════════ */
+  /* ═══════════════ next question + game break ═══════════════ */
   function nextQ() {
     if (!SES) return;
     SES.i++;
     if (SES.i >= SES.qs.length) { finish(); return; }
 
-    /* بريك اللعبة: بعد كل 5 أسئلة في الدروس بس (80%) — الألعاب مدمجة مش شاشة منفصلة */
+    /* game break: after every 5 questions in lessons only (80%) — games are embedded, not a separate zone */
     if (SES.kind === 'lesson' && SES.i % 5 === 0 && window.Breaks && Math.random() < 0.8) {
       pauseTimer();
       window.Breaks.go(function (earned) {
@@ -526,7 +546,7 @@ var G7 = (function () {
     renderQ();
   }
 
-  /* ═══════════════ نهاية الجلسة ═══════════════ */
+  /* ═══════════════ session end ═══════════════ */
   function finish() {
     killTimer(SES);
     var secs = elapsed();
@@ -575,35 +595,35 @@ var G7 = (function () {
     $('res-stars').innerHTML = sh;
 
     var passed = pct >= 70;
-    var msg = pct === 100 ? 'مثالي! انت نجم 🌟'
-      : pct >= 90 ? 'خطير! أداء مذهل 🔥'
-      : pct >= 70 ? 'ممتاز — عدّيت بنجاح ✅'
-      : pct >= 50 ? 'كويس! كمان شوية وتقفلها 💪'
-      : 'محتاجين تدريب أكتر — جرب تاني وانت هتتقنها 💪';
-    if (SES.kind === 'exam') msg += (passed ? ' — نتيجة الامتحان: <b style="color:#16a34a">PASS</b>' : ' — نتيجة الامتحان: <b style="color:#dc2626">حاول تاني</b>');
+    var msg = pct === 100 ? 'Flawless — a perfect run! 🌟'
+      : pct >= 90 ? 'Outstanding performance! 🔥'
+      : pct >= 70 ? 'Excellent — you passed!'
+      : pct >= 50 ? 'Good effort — you are almost there 💪'
+      : 'Keep training — you will master it 💪';
+    if (SES.kind === 'exam') msg += (passed ? ' — Exam result: <b style="color:var(--good)">PASS</b>' : ' — Exam result: <b style="color:var(--bad)">try again</b>');
     $('res-msg').innerHTML = msg;
 
     $('res-nums').innerHTML =
-      'إجابات صح: <b>' + SES.correct + '/' + total + '</b> · ' +
-      '🪙 <b>+' + SES.coins + '</b> · ' +
-      '⏱ ' + fmtT(secs) + ' · ' +
-      '🧭 هنت: ' + SES.hints + ' · ' +
-      '💡 غلطات: ' + SES.mistakes;
+      '<div class="rn"><b>' + SES.correct + '/' + total + '</b>Correct</div>' +
+      '<div class="rn"><b>🪙 +' + SES.coins + '</b>Coins earned</div>' +
+      '<div class="rn"><b>' + fmtT(secs) + '</b>Time</div>' +
+      '<div class="rn"><b>🧭 ' + SES.hints + '</b>Hints used</div>' +
+      '<div class="rn"><b>💡 ' + SES.mistakes + '</b>Mistakes</div>';
 
-    /* مراجعة الغلطات */
+    /* mistakes review */
     var rev = $('res-review'); rev.innerHTML = '';
     if (!SES.wrongs.length) {
       $('rev-title').classList.add('hidden');
     } else {
       $('rev-title').classList.remove('hidden');
-      $('rev-title').textContent = 'مراجعة الغلطات 💡 (' + SES.wrongs.length + ')';
+      $('rev-title').textContent = 'Exactly Where You Slipped (' + SES.wrongs.length + ')';
       SES.wrongs.forEach(function (w) {
         var it = el('div', 'rev-item');
         var h = '<div class="rq">' + w.q + '</div>' +
-          '<div class="rp">❌ اخترت: ' + w.picked + (w.diag ? ' — <i>' + w.diag + '</i>' : '') + '</div>' +
-          '<div class="ra">✅ الصح: ' + w.right + '</div>';
+          '<div class="rp">❌ You picked: ' + w.picked + (w.diag ? ' — <i>' + w.diag + '</i>' : '') + '</div>' +
+          '<div class="ra">✅ The right answer: ' + w.right + '</div>';
         if (w.steps && w.steps.length) {
-          h += '<div class="stepsbox"><div class="st-t">الطريقة:</div><ol>';
+          h += '<div class="stepsbox"><div class="st-t">The right way:</div><ol>';
           for (var k = 0; k < w.steps.length; k++) h += '<li>' + w.steps[k] + '</li>';
           h += '</ol></div>';
         }
@@ -612,7 +632,7 @@ var G7 = (function () {
       });
     }
 
-    /* الأزرار */
+    /* buttons */
     var retry = $('btn-retry'), nextl = $('btn-next-l'), sheet = $('btn-sheet');
     retry.onclick = function () {
       if (SES.kind === 'lesson') startLesson(SES.lesson, SES.level);
@@ -624,13 +644,13 @@ var G7 = (function () {
       var nxt = idx >= 0 ? all[idx + 1] : null;
       nextl.classList.remove('hidden');
       nextl.onclick = function () {
-        if (!nxt) { toast('خلصت كل الدروس المتاحة! جاي في الجزء الجاي 🚀'); goHome(); return; }
+        if (!nxt) { toast('All available lessons complete! The next part is coming.'); goHome(); return; }
         openTopic(topicOf(nxt));
       };
       sheet.classList.remove('hidden');
       sheet.onclick = function () {
         if (G7.printWorksheet) G7.printWorksheet(SES.lesson.id, SES.level);
-        else toast('ملف الطباعة print7.js مش واصل 🙈');
+        else toast('Print module did not load.');
       };
     } else {
       nextl.classList.add('hidden');
@@ -645,7 +665,7 @@ var G7 = (function () {
     return TOPICS[0];
   }
 
-  /* ═══════════════ مركز الطباعة ═══════════════ */
+  /* ═══════════════ print center ═══════════════ */
   function openPrint() {
     var box = $('print-lessons'); box.innerHTML = '';
     allLessons().forEach(function (L) {
@@ -653,58 +673,56 @@ var G7 = (function () {
       row.innerHTML =
         '<div class="pl-title">' + esc(L.code) + ' · ' + esc(L.title) +
         '<small>' + esc(L.sub) + '</small></div>' +
-        '<button class="btn print b1">📖 دليل مراجعة</button>' +
-        '<button class="btn print b2">📝 تدريب سهل</button>' +
-        '<button class="btn print b3">📝 تدريب متوسط</button>';
+        '<button class="btn ghost print">📖 Study Guide</button>' +
+        '<button class="btn ghost print">📝 Easy Sheet</button>' +
+        '<button class="btn ghost print">📝 Medium Sheet</button>';
       var btns = row.querySelectorAll('button');
       btns[0].onclick = function () {
-        if (G7.printStudyGuide) G7.printStudyGuide(L.id); else toast('print7.js مش واصل 🙈');
+        if (G7.printStudyGuide) G7.printStudyGuide(L.id); else toast('Print module did not load.');
       };
       btns[1].onclick = function () {
-        if (G7.printWorksheet) G7.printWorksheet(L.id, 'easy'); else toast('print7.js مش واصل 🙈');
+        if (G7.printWorksheet) G7.printWorksheet(L.id, 'easy'); else toast('Print module did not load.');
       };
       btns[2].onclick = function () {
-        if (G7.printWorksheet) G7.printWorksheet(L.id, 'medium'); else toast('print7.js مش واصل 🙈');
+        if (G7.printWorksheet) G7.printWorksheet(L.id, 'medium'); else toast('Print module did not load.');
       };
       box.appendChild(row);
     });
 
-    /* الشهادة */
+    /* certificate */
     var all = allLessons(), done = 0;
     all.forEach(function (L) { if (bestStars(L.id) > 0) done++; });
     var hint = $('cert-hint');
     if (done >= all.length && all.length >= 13) {
-      hint.textContent = 'كل الدروس المتاحة اتخلصت! الشهادة جاهزة 🎉';
+      hint.textContent = 'Every lesson is complete — your certificate is ready!';
       $('btn-cert').disabled = false;
     } else {
-      hint.textContent = 'الشهادة بتتفتح لما تخلص كل الدروس — باقي ' + (all.length - done) + ' درس 💪';
+      hint.textContent = 'The certificate unlocks when all lessons are complete — ' + (all.length - done) + ' to go.';
       $('btn-cert').disabled = true;
     }
     show('scr-print');
   }
 
-  /* ═══════════════ شاشة التقدم ═══════════════ */
+  /* ═══════════════ stats screen ═══════════════ */
   function openStats() {
-    $('st-coins').textContent = '🪙 ' + ST.coins;
     var box = $('stats-body'); box.innerHTML = '';
     var all = allLessons(), comp = lessonsCompleted();
 
     var g = el('div', 'stat-grid');
     g.innerHTML =
-      '<div class="stat-card"><div class="sv">' + ST.coins + '</div><div class="sl">🪙 الرصيد الكلي</div></div>' +
-      '<div class="stat-card"><div class="sv">' + comp + '/' + all.length + '</div><div class="sl">📚 دروس مكتملة</div></div>';
+      '<div class="stat-card"><div class="sv">' + ST.coins + '</div><div class="sl">🪙 Coins earned</div></div>' +
+      '<div class="stat-card"><div class="sv">' + comp + '/' + all.length + '</div><div class="sl">📚 Lessons completed</div></div>';
     box.appendChild(g);
 
     TOPICS.forEach(function (t) {
       var done = 0;
       t.lessons.forEach(function (L) { if (bestStars(L.id) > 0) done++; });
       var w = el('div', 'topic-card');
-      w.style.setProperty('--tc', t.color);
       w.style.cursor = 'default';
       w.innerHTML =
         '<div class="tc-head"><div class="tc-num">' + t.icon + '</div>' +
         '<div class="tc-info"><div class="tc-title">Topic ' + t.num + '</div>' +
-        '<div class="tc-sub">' + done + '/' + t.lessons.length + ' دروس</div></div></div>' +
+        '<div class="tc-sub">' + done + '/' + t.lessons.length + ' lessons</div></div></div>' +
         '<div class="tc-prog"><div class="pbar"><div style="width:' + Math.round(done / t.lessons.length * 100) + '%"></div></div></div>';
       box.appendChild(w);
     });
@@ -720,19 +738,19 @@ var G7 = (function () {
     show('scr-stats');
   }
 
-  /* ═══════════════ تشغيل ═══════════════ */
+  /* ═══════════════ boot ═══════════════ */
   function boot() {
     load();
 
     $('btn-sound').onclick = function () {
       ST.sound = !ST.sound; save();
-      $('btn-sound').textContent = ST.sound ? '🔊' : '🔇';
+      $('btn-sound').textContent = ST.sound ? 'Sound · On' : 'Sound · Off';
       if (ST.sound) sfx.ok();
     };
     $('btn-stats').onclick = openStats;
     $('btn-print').onclick = openPrint;
     $('btn-logout').onclick = function () {
-      confirmBox('تغيير اسم الطالب؟ التقدم هيفضل محفوظ على الجهاز ده 🙂', function () {
+      confirmBox('Change the student name? Progress stays saved on this device.', function () {
         ST.name = ''; save(); initLogin();
       });
     };
@@ -742,7 +760,7 @@ var G7 = (function () {
     $('btn-home2').onclick = goHome;
 
     $('btn-quit').onclick = function () {
-      confirmBox('الخروج من الدرس؟ نتيجة الجلسة دي <b>مش هتتحفظ</b> 🙏', goHome);
+      confirmBox('Leave this session? This run will <b>not</b> be saved.', goHome);
     };
     $('btn-next').onclick = nextQ;
 
@@ -754,10 +772,10 @@ var G7 = (function () {
       $('modal').classList.add('hidden');
       if (modalYes) { var f = modalYes; modalYes = null; f(); }
     };
-    $('modal-no').onclick = function () { $('modal').classList.add('hidden'); modalYes = null; };
+    $('modal-no').onclick = function () { $('modal').classList.remove('hidden'); modalYes = null; };
 
     $('btn-cert').onclick = function () {
-      if (G7.printCertificate) G7.printCertificate(); else toast('print7.js مش واصل 🙈');
+      if (G7.printCertificate) G7.printCertificate(); else toast('Print module did not load.');
     };
 
     initLogin();
@@ -767,7 +785,7 @@ var G7 = (function () {
     document.addEventListener('DOMContentLoaded', boot);
   } else { boot(); }
 
-  /* ═══════════════ الواجهة العامة ═══════════════ */
+  /* ═══════════════ public interface ═══════════════ */
   return {
     booted: true,
     on: on, emit: emit,
