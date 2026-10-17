@@ -261,6 +261,66 @@ h2{font-family:var(--fs); font-weight:600; font-size:1.35rem; color:var(--gold);
 }
 
 /* ════════════════════════════════════════════════════════════
+   FOUNDER BRANDING · MR. AKRAM
+   ════════════════════════════════════════════════════════════ */
+.founder-medal{display:flex; align-items:center; gap:.9rem; padding:.55rem 1.3rem; border:1px solid var(--gold-deep); border-radius:99px; background:rgba(210,164,77,.06)}
+.fm-ring{width:40px; height:40px; flex:none; border-radius:50%; border:1.5px solid var(--gold); display:grid; place-items:center; font-family:var(--fs); font-weight:700; color:var(--gold-hi); font-size:.95rem; letter-spacing:.04em; background:rgba(210,164,77,.08)}
+.fm-txt{font-size:.82rem; color:var(--muted); letter-spacing:.14em; text-transform:uppercase; line-height:1.5; text-align:left}
+.fm-txt b{display:block; color:var(--gold-hi); font-family:var(--fs); font-size:1.02rem; letter-spacing:.06em; text-transform:none}
+.founder-strip{display:flex; align-items:center; gap:1rem; background:linear-gradient(135deg, rgba(210,164,77,.10), rgba(210,164,77,.03)); border:1px solid var(--gold-deep); border-radius:16px; padding:.9rem 1.2rem; margin-bottom:1.6rem}
+.fs-medal{width:52px; height:52px; flex:none; border-radius:50%; border:1.5px solid var(--gold); display:grid; place-items:center; font-family:var(--fs); font-weight:700; color:var(--gold-hi); font-size:1.15rem; background:rgba(210,164,77,.08); box-shadow:0 0 0 5px rgba(210,164,77,.05)}
+.fs-txt{display:flex; flex-direction:column; gap:.15rem; min-width:0}
+.fs-txt b{font-family:var(--fs); color:var(--gold-hi); font-size:1.18rem; letter-spacing:.04em}
+.fs-txt span{color:var(--muted); font-size:.85rem; line-height:1.55}
+.founder-foot{margin-top:2.2rem; padding-top:1.2rem; border-top:1px solid var(--line); text-align:center; color:var(--faint); font-size:.8rem; letter-spacing:.08em}
+.founder-foot b{color:var(--gold); font-family:var(--fs); letter-spacing:.06em}
+@media(max-width:640px){
+  .fs-txt span{font-size:.78rem}
+  .founder-strip{padding:.7rem .9rem}
+}
+
+/* ════════════════════════════════════════════════════════════
+   WHATSAPP FLOAT BUTTON
+   ════════════════════════════════════════════════════════════ */
+.wa-float{position:fixed; right:18px; bottom:18px; z-index:80; width:58px; height:58px; border-radius:50%; border:none; cursor:pointer; background:#22c55e; color:#fff; display:grid; place-items:center; box-shadow:0 8px 26px rgba(34,197,94,.42); transition:transform .15s, box-shadow .15s}
+.wa-float:hover{transform:scale(1.08); box-shadow:0 10px 32px rgba(34,197,94,.55)}
+.wa-float:active{transform:scale(.96)}
+.wa-float::after{content:''; position:absolute; inset:-5px; border-radius:50%; border:2px solid rgba(34,197,94,.5); animation:waPulse 2.2s ease-out infinite}
+@keyframes waPulse{0%{transform:scale(.85); opacity:1}70%{transform:scale(1.35); opacity:0}100%{transform:scale(1.35); opacity:0}}
+.wa-float .wa-dot{position:absolute; top:-2px; right:-2px; width:20px; height:20px; border-radius:50%; background:var(--bad); color:#fff; font-size:.72rem; font-weight:700; display:grid; place-items:center; border:2px solid var(--bg)}
+.wa-float.unset .wa-dot{display:grid}
+.wa-float:not(.unset) .wa-dot{display:none}
+.wa-edit{position:fixed; right:76px; bottom:26px; z-index:80; width:32px; height:32px; border-radius:50%; border:1px solid var(--line2); background:var(--card2); color:var(--muted); cursor:pointer; font-size:.85rem; display:grid; place-items:center; transition:color .15s, border-color .15s}
+.wa-edit:hover{color:var(--gold-hi); border-color:var(--gold-deep)}
+.wa-box .wa-ico{color:#22c55e}
+@media print{ .wa-float, .wa-edit{ display:none !important; } }
+
+/* ════════════════════════════════════════════════════════════
+   RESULT GIFT CARD + BADGES
+   ════════════════════════════════════════════════════════════ */
+.res-gift{display:flex; align-items:center; gap:1rem; text-align:left; margin:1.2rem auto 0; max-width:480px; background:linear-gradient(135deg, rgba(210,164,77,.16), rgba(210,164,77,.05)); border:1.5px solid var(--gold-deep); border-radius:16px; padding:1rem 1.2rem; animation:giftPop .5s ease both}
+@keyframes giftPop{0%{transform:scale(.92); opacity:0}100%{transform:scale(1); opacity:1}}
+.g-ico{font-size:2.2rem; flex:none; filter:drop-shadow(0 0 10px rgba(210,164,77,.5))}
+.g-l1{font-family:var(--fs); color:var(--gold-hi); font-size:1.05rem; font-weight:600}
+.g-l2{color:var(--ink); font-size:.92rem; margin-top:.15rem}
+.g-l3{color:var(--muted); font-size:.8rem; margin-top:.25rem}
+.lr-side{display:flex; align-items:center; gap:.5rem; flex:none}
+.lr-badge{display:inline-grid; place-items:center; width:34px; height:34px; border-radius:50%; background:rgba(210,164,77,.12); border:1px solid var(--gold-deep); font-size:1.05rem}
+.bdg-head{margin:2rem 0 .2rem}
+.badge-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(128px, 1fr)); gap:.7rem; margin-bottom:1.6rem}
+.bdg{background:var(--card); border:1.5px solid var(--gold-deep); border-radius:14px; padding:.9rem .5rem .7rem; text-align:center; transition:transform .15s}
+.bdg:hover{transform:translateY(-2px)}
+.bdg .b-ico{font-size:1.9rem; filter:drop-shadow(0 0 8px rgba(210,164,77,.35))}
+.bdg .b-nm{font-family:var(--fs); color:var(--gold-hi); font-size:.92rem; margin-top:.35rem; line-height:1.25}
+.bdg .b-cd{color:var(--muted); font-size:.72rem; margin-top:.3rem; letter-spacing:.06em}
+.bdg.off{opacity:.38; filter:grayscale(.9)}
+.bdg.off .b-ico{filter:grayscale(1)}
+
+@media(max-width:640px){
+  .badge-grid{grid-template-columns:repeat(auto-fill, minmax(104px, 1fr))}
+}
+
+/* ════════════════════════════════════════════════════════════
    PRINT — A4 sheets (guides, worksheets, bubbles, key, cert)
    ════════════════════════════════════════════════════════════ */
 #print-area{display:none}
@@ -268,7 +328,7 @@ h2{font-family:var(--fs); font-weight:600; font-size:1.35rem; color:var(--gold);
 @media print{
   @page{ size:A4 portrait; margin:11mm; }
   body{ background:#fff; font-size:12pt; }
-  .screen, .toast, .modal, .alarm, #br-ov{ display:none !important; }
+  .screen, .toast, .modal, .alarm, #br-ov, .wa-float, .wa-edit{ display:none !important; }
   #print-area{ display:block; }
   .pg-sheet{ page-break-after:always; }
   .pg-sheet:last-child{ page-break-after:auto; }
@@ -332,4 +392,14 @@ h2{font-family:var(--fs); font-weight:600; font-size:1.35rem; color:var(--gold);
   .cert .c-sig{ text-align:center; font-size:10pt; color:#475569; }
   .cert .c-sig b{ font-family:Georgia,serif; font-size:15pt; color:#1e293b; }
   .cert .c-sig .sigline{ border-top:1.5px solid #475569; margin:0 12px; padding-top:6px; min-width:170px; }
+
+  /* ── lesson certificate (Certificate of Appreciation) ── */
+  .cert .c-seal{ width:74px; height:74px; margin:0 auto 10px; border-radius:50%; border:2.5px solid #b45309; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:Georgia,serif; font-weight:900; color:#7c5b1c; background:#fdf6e3; box-shadow:0 0 0 4px #faf6ec, 0 0 0 5.5px #d3a675; }
+  .cert .c-seal{ font-size:20pt; line-height:1; }
+  .cert .c-seal span{ font-size:8.5pt; letter-spacing:3px; margin-top:2px; }
+  .cert .c-eyebrow{ font-size:9.5pt; letter-spacing:4px; color:#8a6a2a; font-weight:700; margin:6px 0 0; text-transform:uppercase; }
+  .cert .c-lesson{ font-family:Georgia,serif; font-size:17pt; font-weight:900; color:#1e293b; margin:10px 0 2px; }
+  .cert .c-sub{ font-size:10.5pt; color:#64748b; margin:0 0 10px; font-style:italic; }
+  .cert .c-award{ font-size:11pt; color:#7c5b1c; background:#fdf6e3; border:1.5px dashed #b45309; border-radius:8px; padding:8px 14px; margin:12px auto 0; max-width:420px; font-weight:600; }
+  .cert .c-award b{ color:#b45309; }
 }

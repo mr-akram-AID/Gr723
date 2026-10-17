@@ -70,7 +70,7 @@ var G7 = (function () {
 
   /* ═══════════════ state (localStorage) ═══════════════ */
   var LSKEY = 'G7V2';
-  var ST = { name: '', sound: true, coins: 0, lessons: {}, exams: {} };
+  var ST = { name: '', sound: true, coins: 0, badges: {}, lessons: {}, exams: {} };
   function save() { try { localStorage.setItem(LSKEY, JSON.stringify(ST)); } catch (e) {} }
   function load() {
     try {
@@ -83,6 +83,7 @@ var G7 = (function () {
           var k;
           for (k in ST) { if (Object.prototype.hasOwnProperty.call(ST, k)) delete ST[k]; }
           for (k in o) { if (Object.prototype.hasOwnProperty.call(o, k)) ST[k] = o[k]; }
+          ST.badges = ST.badges || {};
         }
       }
     } catch (e) {}
@@ -151,12 +152,58 @@ var G7 = (function () {
   }
 
   /* ═══════════════ exams ═══════════════ */
+  /* course order: T1 (5) → T2 (5) → T3 (6) → T4 (8) → T5 (7) = 31 lessons */
   var EXAMS = [
-    { id: 'cp1', ico: '🎯', title: 'Checkpoint 1', need: 5,  from: 0,  len: 5, perLesson: 3, sub: 'Lessons 1–5 · Rational Numbers' },
-    { id: 'cp2', ico: '🎯', title: 'Checkpoint 2', need: 10, from: 5,  len: 5, perLesson: 3, sub: 'Lessons 6–10 · Equivalent Expressions' },
-    { id: 'cp3', ico: '🎯', title: 'Checkpoint 3', need: 15, from: 10, len: 5, perLesson: 3, sub: 'Lessons 11–15 · Expressions & Equations' },
-    { id: 'fin', ico: '🏆', title: 'Final Exam',    need: 20, from: 0,  len: 0,  perLesson: 2, sub: 'The whole course · 30 questions' }
+    { id: 'cp1', ico: '🎯', title: 'Checkpoint 1', need: 10, from: 0,  len: 10, perLesson: 2, sub: 'Lessons 1–10 · Rational Numbers & Proportional Relationships' },
+    { id: 'cp2', ico: '🎯', title: 'Checkpoint 2', need: 20, from: 10, len: 10, perLesson: 2, sub: 'Lessons 11–20 · Percent Problems & Equivalent Expressions' },
+    { id: 'cp3', ico: '🎯', title: 'Checkpoint 3', need: 25, from: 20, len: 11, perLesson: 2, sub: 'Lessons 21–31 · Equations & Inequalities' },
+    { id: 'fin', ico: '🏆', title: 'Final Exam',    need: 31, from: 0,  len: 0,  perLesson: 2, sub: 'The whole course · 30 questions' }
   ];
+
+  /* ═══════════════ badges (a gift for every lesson) ═══════════════ */
+  var BADGES = {
+    t1l1: { ico: '⚡', name: 'Sign Master' },
+    t1l2: { ico: '✖️', name: 'Fraction Forger' },
+    t1l3: { ico: '➗', name: 'Division Dynamo' },
+    t1l4: { ico: '🎯', name: 'Rational Ranger' },
+    t1l5: { ico: '🧠', name: 'Problem Slayer' },
+    t2l1: { ico: '🏁', name: 'Speed Scout' },
+    t2l2: { ico: '🌀', name: 'Flip Master' },
+    t2l3: { ico: '⚖️', name: 'Balance Keeper' },
+    t2l4: { ico: '🔑', name: 'Key Finder' },
+    t2l5: { ico: '📈', name: 'Line Rider' },
+    t3l1: { ico: '💯', name: 'Percent Pro' },
+    t3l2: { ico: '🔗', name: 'Cross-Product Champ' },
+    t3l3: { ico: '🧮', name: 'Equation Ace' },
+    t3l4: { ico: '📊', name: 'Change Chaser' },
+    t3l5: { ico: '🏷️', name: 'Deal Hunter' },
+    t3l6: { ico: '🏦', name: 'Interest Idol' },
+    t4l1: { ico: '✍️', name: 'Expression Writer' },
+    t4l2: { ico: '🔄', name: 'Equivalent Expert' },
+    t4l3: { ico: '🧹', name: 'Simplifier' },
+    t4l4: { ico: '💥', name: 'Expander' },
+    t4l5: { ico: '🔍', name: 'Factor Detective' },
+    t4l6: { ico: '➕', name: 'The Collector' },
+    t4l7: { ico: '➖', name: 'The Subtractor' },
+    t4l8: { ico: '🕵️', name: 'Proof Master' },
+    t5l1: { ico: '📝', name: 'Equation Architect' },
+    t5l2: { ico: '🔓', name: 'The Unlocker' },
+    t5l3: { ico: '📦', name: 'The Distributor' },
+    t5l4: { ico: '⛓️', name: 'Inequality Starter' },
+    t5l5: { ico: '🔀', name: 'Flip Guardian' },
+    t5l6: { ico: '🎚️', name: 'Range Master' },
+    t5l7: { ico: '🏆', name: 'Final Solver' }
+  };
+  function badgeOf(L) { return BADGES[L.id] || { ico: '🏅', name: L.code + ' Champion' }; }
+  function badgeCount() {
+    var n = 0, k;
+    for (k in ST.badges) { if (Object.prototype.hasOwnProperty.call(ST.badges, k)) n++; }
+    return n;
+  }
+  function fmtDate() {
+    var d = new Date();
+    return d.getDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear();
+  }
 
   /* ═══════════════ splash + name ═══════════════ */
   function initLogin() {
@@ -230,7 +277,7 @@ var G7 = (function () {
 
     var all = allLessons(), comp = lessonsCompleted();
     $('topics-progress').innerHTML = 'Course progress · <b>' + comp + '/' + all.length +
-      '</b> lessons completed · <b>' + ST.coins + '</b> coins earned';
+      '</b> lessons completed · <b>🎁 ' + badgeCount() + '</b> badges earned · <b>' + ST.coins + '</b> coins';
   }
 
   function starsHTML(pct) {
@@ -279,6 +326,7 @@ var G7 = (function () {
     t.lessons.forEach(function (L) {
       var row = el('div', 'lesson-row');
       var st = bestStars(L.id);
+      var got = !!ST.badges[L.id];
       row.innerHTML =
         '<div class="lr-head">' +
           '<span class="lr-code">' + esc(L.code) + '</span>' +
@@ -286,7 +334,10 @@ var G7 = (function () {
             '<div class="lr-title">' + esc(L.title) + '</div>' +
             '<div class="lr-sub">' + esc(L.sub) + '</div>' +
           '</div>' +
-          '<span class="lr-stars">' + (st ? '⭐'.repeat(st) : '') + '</span>' +
+          '<span class="lr-side">' +
+            (got ? '<span class="lr-badge" title="' + esc(badgeOf(L).name) + '">' + badgeOf(L).ico + '</span>' : '') +
+            '<span class="lr-stars">' + (st ? '⭐'.repeat(st) : '') + '</span>' +
+          '</span>' +
         '</div>' +
         '<div class="lr-btns">' +
           '<button class="btn ghost lvl easy">🌱 Easy</button>' +
@@ -304,7 +355,8 @@ var G7 = (function () {
     });
 
     $('tp-progress').innerHTML = 'Topic progress · <b>' + done + '/' + t.lessons.length +
-      '</b> lessons completed · <b>' + ST.coins + '</b> coins earned';
+      '</b> lessons completed · <b>🎁 ' + t.lessons.filter(function (L) { return !!ST.badges[L.id]; }).length +
+      '</b> badges · <b>' + ST.coins + '</b> coins earned';
     show('scr-topic');
   }
 
@@ -335,6 +387,7 @@ var G7 = (function () {
 
   /* ═══════════════ session ═══════════════ */
   var SES = null;
+  var LASTBADGE = null; /* badge earned in the run that just finished */
 
   function startLesson(L, level) {
     var qs = buildQs(L, level, 20, true);
@@ -559,8 +612,23 @@ var G7 = (function () {
       rec.best = Math.max(rec.best || 0, pct);
       rec.stars = Math.max(rec.stars || 0, stars);
       rec.plays = (rec.plays || 0) + 1;
+
+      /* 🎁 badge gift — earned on a real pass (70%+) */
+      LASTBADGE = null;
+      if (pct >= 70) {
+        var bd = ST.badges[SES.lesson.id];
+        if (!bd) {
+          LASTBADGE = badgeOf(SES.lesson);
+          ST.badges[SES.lesson.id] = { d: fmtDate(), pct: pct, level: SES.level };
+          ST.coins += 50; /* gift bonus coins */
+        } else {
+          bd.pct = Math.max(bd.pct || 0, pct);
+          bd.level = SES.level;
+        }
+      }
+
       emit('sendResult', {
-        student: ST.name, coach: 'أكرم', mode: 'Lesson',
+        student: ST.name, coach: 'Mr. Akram', mode: 'Lesson',
         item: SES.lesson.code + ' · ' + (SES.level === 'easy' ? 'Easy' : 'Medium'),
         score: SES.correct, total: total, percent: pct,
         hints: SES.hints, seconds: secs, mistakes: SES.mistakes
@@ -570,7 +638,7 @@ var G7 = (function () {
       er.best = Math.max(er.best || 0, pct);
       er.plays = (er.plays || 0) + 1;
       emit('sendResult', {
-        student: ST.name, coach: 'أكرم', mode: SES.exam.title,
+        student: ST.name, coach: 'Mr. Akram', mode: SES.exam.title,
         item: SES.exam.sub, score: SES.correct, total: total, percent: pct,
         hints: SES.hints, seconds: secs, mistakes: SES.mistakes
       });
@@ -593,6 +661,21 @@ var G7 = (function () {
       sh += '<span class="st" style="animation-delay:' + (i * 0.18) + 's">' + (i < stars ? '⭐' : '☆') + '</span>';
     }
     $('res-stars').innerHTML = sh;
+
+    /* 🎁 gift card — a new badge was unlocked this run */
+    var gift = $('res-gift');
+    if (LASTBADGE) {
+      gift.innerHTML =
+        '<div class="g-ico">' + LASTBADGE.ico + '</div>' +
+        '<div class="g-mid">' +
+          '<div class="g-l1">New gift unlocked!</div>' +
+          '<div class="g-l2">' + esc(LASTBADGE.name) + ' — Lesson ' + esc(SES.lesson.code) + ' badge</div>' +
+          '<div class="g-l3">🪙 +50 gift coins · see it in My Statistics</div>' +
+        '</div>';
+      gift.classList.remove('hidden');
+    } else {
+      gift.classList.add('hidden');
+    }
 
     var passed = pct >= 70;
     var msg = pct === 100 ? 'Flawless — a perfect run! 🌟'
@@ -633,7 +716,7 @@ var G7 = (function () {
     }
 
     /* buttons */
-    var retry = $('btn-retry'), nextl = $('btn-next-l'), sheet = $('btn-sheet');
+    var retry = $('btn-retry'), nextl = $('btn-next-l'), sheet = $('btn-sheet'), certl = $('btn-cert-l');
     retry.onclick = function () {
       if (SES.kind === 'lesson') startLesson(SES.lesson, SES.level);
       else startExam(SES.exam);
@@ -652,9 +735,22 @@ var G7 = (function () {
         if (G7.printWorksheet) G7.printWorksheet(SES.lesson.id, SES.level);
         else toast('Print module did not load.');
       };
+      /* 🎓 per-lesson certificate — printable, signed by Mr. Akram */
+      if (passed) {
+        certl.classList.remove('hidden');
+        certl.onclick = function () {
+          if (G7.printLessonCert) G7.printLessonCert(SES.lesson.id, { pct: pct, score: SES.correct, total: total, level: SES.level });
+          else toast('Print module did not load.');
+        };
+      } else {
+        certl.classList.add('hidden');
+        certl.onclick = null;
+      }
     } else {
       nextl.classList.add('hidden');
       sheet.classList.add('hidden');
+      certl.classList.add('hidden');
+      certl.onclick = null;
     }
   }
 
@@ -711,8 +807,28 @@ var G7 = (function () {
     var g = el('div', 'stat-grid');
     g.innerHTML =
       '<div class="stat-card"><div class="sv">' + ST.coins + '</div><div class="sl">🪙 Coins earned</div></div>' +
-      '<div class="stat-card"><div class="sv">' + comp + '/' + all.length + '</div><div class="sl">📚 Lessons completed</div></div>';
+      '<div class="stat-card"><div class="sv">' + comp + '/' + all.length + '</div><div class="sl">📚 Lessons completed</div></div>' +
+      '<div class="stat-card"><div class="sv">' + badgeCount() + '/' + all.length + '</div><div class="sl">🎁 Badges earned</div></div>';
     box.appendChild(g);
+
+    /* 🎁 badge gallery — one gift for every lesson in the course */
+    var bh = el('div', 'bdg-head');
+    bh.innerHTML = '<div class="eyebrow">My Badge Collection</div>' +
+      '<h2 style="margin-bottom:.6rem">Gifts from Mr. Akram 🎁</h2>' +
+      '<p class="muted" style="font-size:.85rem;margin-bottom:1rem">Pass any lesson with 70% or more to unlock its badge — plus 50 gift coins.</p>';
+    box.appendChild(bh);
+    var grid = el('div', 'badge-grid');
+    allLessons().forEach(function (L) {
+      var got = ST.badges[L.id];
+      var bd = badgeOf(L);
+      var cell = el('div', 'bdg' + (got ? '' : ' off'));
+      cell.innerHTML =
+        '<div class="b-ico">' + bd.ico + '</div>' +
+        '<div class="b-nm">' + esc(bd.name) + '</div>' +
+        '<div class="b-cd">' + esc(L.code) + (got ? ' · ' + got.pct + '%' : ' · locked') + '</div>';
+      grid.appendChild(cell);
+    });
+    box.appendChild(grid);
 
     TOPICS.forEach(function (t) {
       var done = 0;
@@ -779,6 +895,11 @@ var G7 = (function () {
     };
 
     initLogin();
+
+    /* coach preview mode (?coach=1) — lets Mr. Akram see the correct answers while testing */
+    if (location.search.indexOf('coach') >= 0) {
+      G7.peek = function () { return SES ? SES.qs[SES.i].a : -1; };
+    }
   }
 
   if (document.readyState === 'loading') {
@@ -795,6 +916,7 @@ var G7 = (function () {
     lessonById: lessonById,
     lessonsCompleted: lessonsCompleted,
     bestStars: bestStars,
+    badgeOf: badgeOf,
     state: ST,
     save: save,
     show: show,

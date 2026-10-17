@@ -24,7 +24,7 @@
         g7: 1,                                   // الراوتر: يوجه لتب Grade7
         ts: new Date().toISOString(),            // Timestamp
         name: rec.student || '',                 // Student
-        coach: rec.coach || 'أكرم',              // Coach
+        coach: rec.coach || 'Mr. Akram',         // Coach
         mode: rec.mode || 'Lesson',              // Mode
         item: rec.item,                          // Item
         score: rec.score,                        // Score

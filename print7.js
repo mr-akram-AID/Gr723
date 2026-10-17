@@ -167,7 +167,43 @@
     doPrint(qPages + bubSheet + keySheet);
   }
 
-  /* ═══════════════ 3) الشهادة ═══════════════ */
+  /* ═══════════════ 3) الشهادات ═══════════════ */
+
+  /* 🎓 شهادة تقدير بعد كل درس — باسم مستر اكرم */
+  function printLessonCert(lessonId, info) {
+    var L = G7.lessonById(lessonId);
+    if (!L) { G7.toast('Lesson not found.'); return; }
+    var st = G7.state;
+    info = info || {};
+    var pct = info.pct != null ? info.pct : 100;
+    var stars = pct >= 90 ? 3 : (pct >= 70 ? 2 : 1);
+    var s2 = '';
+    for (var i = 0; i < stars; i++) s2 += '⭐';
+    var level = info.level === 'medium' ? 'Medium' : 'Easy';
+
+    var html = '<div class="pg-sheet"><div class="cert lc">' +
+      '<div class="c-seal">A<span>ID</span></div>' +
+      '<div class="c-brand">AID MATHEMATICS ACADEMY</div>' +
+      '<div class="c-eyebrow">GRADE 7 · MR. AKRAM\'S CLASS</div>' +
+      '<div class="c-t">CERTIFICATE OF APPRECIATION</div>' +
+      '<div class="c-line">This certificate is proudly presented to</div>' +
+      '<div class="c-name">' + st.name + '</div>' +
+      '<div class="c-line">for outstanding effort and success in</div>' +
+      '<div class="c-lesson">Lesson ' + L.code + ' · ' + L.title + '</div>' +
+      '<div class="c-sub">' + L.sub + '</div>' +
+      '<div class="c-line">Passed with a score of <b>' + pct + '%</b> (' + (info.score || 0) + '/' + (info.total || 20) +
+        ' questions · ' + level + ' level)</div>' +
+      '<div class="c-stars">' + s2 + '</div>' +
+      '<div class="c-award">🏅 Badge earned: ' + (G7.badgeOf ? G7.badgeOf(L).name : 'Lesson ' + L.code + ' Champion') + ' — keep collecting them all!</div>' +
+      '<div class="c-foot">' +
+        '<div class="c-sig"><div class="sigline"><b>Mr. Akram</b><br>Founder &amp; Mathematics Coach</div></div>' +
+        '<div class="c-sig"><div class="sigline"><b>' + today() + '</b><br>Date</div></div>' +
+      '</div>' +
+    '</div></div>';
+    doPrint(html);
+  }
+
+  /* شهادة الكورس كله — بعد إكمال كل الدروس */
   function printCertificate() {
     var st = G7.state;
     var all = G7.allLessons(), done = 0, stars = 0;
@@ -187,11 +223,11 @@
       '<div class="c-t">CERTIFICATE OF ACHIEVEMENT</div>' +
       '<div class="c-line">This certificate is proudly presented to</div>' +
       '<div class="c-name">' + st.name + '</div>' +
-      '<div class="c-line">for outstanding dedication and mastery of<br><b>Grade 7 Mathematics · Topics 1, 4 & 5</b><br>(Operations with Rational Numbers · Equivalent Expressions · Equations & Inequalities)</div>' +
+      '<div class="c-line">for outstanding dedication and mastery of<br><b>Grade 7 Mathematics · Topics 1–5</b><br>(Rational Numbers · Proportional Relationships · Percent Problems · Equivalent Expressions · Equations & Inequalities)</div>' +
       '<div class="c-stars">' + st2 + '</div>' +
-      '<div class="c-line">Completed ' + done + ' lessons · Final Exam Passed · Coins earned: ' + st.coins + '</div>' +
+      '<div class="c-line">Completed ' + done + ' lessons · Final Exam Passed · Badges earned: ' + (st.badges ? Object.keys(st.badges).length : 0) + ' · Coins earned: ' + st.coins + '</div>' +
       '<div class="c-foot">' +
-        '<div class="c-sig"><div class="sigline"><b>Mr. Akram</b><br>Math Coach</div></div>' +
+        '<div class="c-sig"><div class="sigline"><b>Mr. Akram</b><br>Founder & Mathematics Coach</div></div>' +
         '<div class="c-sig"><div class="sigline"><b>' + today() + '</b><br>Date</div></div>' +
       '</div>' +
     '</div></div>';
@@ -203,6 +239,7 @@
     if (!window.G7 || !G7.on) { setTimeout(hook, 120); return; }
     G7.printStudyGuide = printStudyGuide;
     G7.printWorksheet = printWorksheet;
+    G7.printLessonCert = printLessonCert;
     G7.printCertificate = printCertificate;
   }
   hook();

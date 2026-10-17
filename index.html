@@ -19,9 +19,12 @@
       <div class="logo-tag">Grade 7 Mathematics</div>
       <div class="logo-rule"><span class="dm"></span></div>
     </div>
-    <div class="splash-credit">Designed by&nbsp;<b>Mr. Akram</b></div>
+    <div class="founder-medal">
+      <span class="fm-ring">MA</span>
+      <span class="fm-txt">Founded &amp; designed by<b>Mr.&nbsp;Akram</b></span>
+    </div>
     <button class="btn primary big" id="btn-begin" type="button">Begin</button>
-    <div class="splash-sub">Savvas enVision · Rational Numbers · Equivalent Expressions · Equations &amp; Inequalities</div>
+    <div class="splash-sub">Savvas enVision · Rational Numbers · Proportional Relationships · Percent Problems · Expressions · Equations &amp; Inequalities</div>
   </div>
 </section>
 
@@ -43,6 +46,10 @@
 <!-- ═══════════ TOPICS ═══════════ -->
 <section class="screen" id="scr-home">
   <div class="wrap">
+    <div class="founder-strip">
+      <div class="fs-medal">MA</div>
+      <div class="fs-txt"><b>Mr. Akram</b><span>Founder &amp; Mathematics Coach — every lesson, question and certificate on this platform carries his signature.</span></div>
+    </div>
     <div class="hub-head">
       <div>
         <div class="eyebrow" id="topics-hello">Welcome</div>
@@ -59,10 +66,11 @@
     <div class="ms-head">
       <div class="eyebrow">Milestones</div>
       <h2 style="margin-bottom:.3rem">Checkpoints &amp; Final Exam</h2>
-      <p class="muted" style="font-size:.88rem">Every 5 lessons a 20-question checkpoint covers exactly those lessons — no hints there, just like the real paper. The Final covers everything.</p>
+      <p class="muted" style="font-size:.88rem">Three checkpoints cover the course in order (10 + 10 + 11 lessons) — no hints there, just like the real paper. The Final covers everything.</p>
     </div>
     <div id="exams-list"></div>
     <div class="hub-progress" id="topics-progress"></div>
+    <div class="founder-foot">AID Mathematics Academy · Grade 7 · Founded &amp; directed by <b>Mr. Akram</b> · WhatsApp support for every student</div>
   </div>
 </section>
 
@@ -120,10 +128,12 @@
       <div class="res-ring" id="res-ring"><span id="res-pct">0%</span></div>
       <div class="res-stars" id="res-stars"></div>
       <div class="res-msg" id="res-msg"></div>
+      <div id="res-gift" class="res-gift hidden"></div>
       <div class="res-nums" id="res-nums"></div>
       <div class="res-btns">
         <button class="btn primary" id="btn-retry">Retry — new questions</button>
         <button class="btn gold" id="btn-next-l">Next Lesson &#8594;</button>
+        <button class="btn gold" id="btn-cert-l">🎓 My Certificate</button>
         <button class="btn ghost" id="btn-sheet">Practice Sheet</button>
         <button class="btn ghost" id="btn-home2">All Topics</button>
       </div>
@@ -188,7 +198,7 @@
     <h2>The platform did not start correctly</h2>
     <p>One of the JavaScript files is missing or was copied incompletely. Do this:</p>
     <ol>
-      <li>Make sure these files sit together in the same folder: <b>index.html · style.css · engine.js · print7.js · t1.js · t4.js · t5.js · breaks.js · sheet7.js</b></li>
+      <li>Make sure these files sit together in the same folder: <b>index.html · style.css · config.js · engine.js · print7.js · t1.js · t2.js · t3.js · t4.js · t5.js · breaks.js · sheet7.js</b></li>
       <li>Open each file and press <b>Ctrl+End</b> — the last line must be <b>})();</b> or <b>);</b> or <b>&lt;/html&gt;</b></li>
       <li>If a line is missing or the code is cut, copy that file again from the start</li>
       <li>Save every file as <b>UTF-8</b> (Save As &#8592; Encoding)</li>
@@ -209,9 +219,12 @@ window.addEventListener('load', function(){
 });
 </script>
 
+<script src="config.js"></script>
 <script src="engine.js"></script>
 <script src="print7.js"></script>
 <script src="t1.js"></script>
+<script src="t2.js"></script>
+<script src="t3.js"></script>
 <script src="t4.js"></script>
 <script src="t5.js"></script>
 <script src="breaks.js"></script>
