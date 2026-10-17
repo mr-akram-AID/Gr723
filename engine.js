@@ -735,13 +735,21 @@ var G7 = (function () {
         if (G7.printWorksheet) G7.printWorksheet(SES.lesson.id, SES.level);
         else toast('Print module did not load.');
       };
-      /* 🎓 per-lesson certificate — printable, signed by Mr. Akram */
+      /* 🎓 per-lesson certificate — reveals on screen, printable, signed by Mr. Akram */
       if (passed) {
+        var cinfo = { pct: pct, score: SES.correct, total: total, level: SES.level };
         certl.classList.remove('hidden');
         certl.onclick = function () {
-          if (G7.printLessonCert) G7.printLessonCert(SES.lesson.id, { pct: pct, score: SES.correct, total: total, level: SES.level });
+          if (G7.showLessonCert) G7.showLessonCert(SES.lesson.id, cinfo);
+          else if (G7.printLessonCert) G7.printLessonCert(SES.lesson.id, cinfo);
           else toast('Print module did not load.');
         };
+        /* the celebration moment — the certificate rises on its own */
+        setTimeout(function () {
+          if ($('scr-result').classList.contains('active') && G7.showLessonCert) {
+            G7.showLessonCert(SES.lesson.id, cinfo);
+          }
+        }, 1600);
       } else {
         certl.classList.add('hidden');
         certl.onclick = null;

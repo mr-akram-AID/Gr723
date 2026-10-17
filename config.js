@@ -2,78 +2,24 @@
    AID Mathematics Academy · Grade 7 — config.js
    Teacher settings + the floating WhatsApp button.
 
-   ⚠️ MR. AKRAM — PUT YOUR WHATSAPP NUMBER HERE:
-   Replace the number below with your own number, in international
-   format: country code + number, digits only, no + and no spaces.
-   Example for Egypt:  '201234567890'
+   The WhatsApp number below is FIXED. Every student who taps the
+   green button opens Mr. Akram's chat directly. It cannot be
+   changed from inside the platform.
    ============================================================ */
 window.G7CONFIG = {
   teacher: 'Mr. Akram',
-  whatsapp: ''   /* ← put your number between the quotes, e.g. '201234567890' */
+  whatsapp: '201279441379'   /* Mr. Akram's number — fixed, digits only */
 };
 
-/* ─── Floating WhatsApp button — works even if the number is not set ─── */
+/* ─── Floating WhatsApp button — always opens Mr. Akram's chat ─── */
 (function () {
   'use strict';
 
-  function storedNumber() {
-    try { return localStorage.getItem('G7WA') || ''; } catch (e) { return ''; }
-  }
-  function fileNumber() {
-    return (window.G7CONFIG && window.G7CONFIG.whatsapp) || '';
-  }
-  function currentNumber() {
-    var n = (storedNumber() || fileNumber()).replace(/[^0-9]/g, '');
-    return n;
-  }
-
+  var NUMBER = '201279441379'; /* fixed — students cannot edit it */
   var MSG = 'Hello Mr. Akram! I am using the AID Mathematics Academy (Grade 7) platform and I need some help, please.';
 
   function openChat() {
-    var n = currentNumber();
-    if (!n) { askNumber(); return; }
-    window.open('https://wa.me/' + n + '?text=' + encodeURIComponent(MSG), '_blank');
-  }
-
-  /* ask the teacher's number once — saved on this device */
-  function askNumber() {
-    var old = document.getElementById('wa-modal');
-    if (old) { old.remove(); }
-    var m = document.createElement('div');
-    m.id = 'wa-modal';
-    m.className = 'modal';
-    m.innerHTML =
-      '<div class="modal-box wa-box">' +
-        '<div class="wa-ico">' + waSvg(34) + '</div>' +
-        '<h2 style="margin:.6rem 0 .4rem">Chat with Mr. Akram</h2>' +
-        '<p class="muted" style="font-size:.9rem;line-height:1.6">Type Mr. Akram\'s WhatsApp number (country code + number, digits only). It stays saved on this device.</p>' +
-        '<input id="wa-num" class="big-input" inputmode="numeric" maxlength="15" placeholder="e.g. 201234567890" value="' + esc(storedNumber()) + '">' +
-        '<div class="row center">' +
-          '<button class="btn primary" id="wa-save">Open WhatsApp</button>' +
-          '<button class="btn ghost" id="wa-cancel">Cancel</button>' +
-        '</div>' +
-      '</div>';
-    document.body.appendChild(m);
-    document.getElementById('wa-num').focus();
-    document.getElementById('wa-cancel').onclick = function () { m.remove(); };
-    document.getElementById('wa-save').onclick = function () {
-      var v = document.getElementById('wa-num').value.replace(/[^0-9]/g, '');
-      if (v.length < 8) {
-        document.getElementById('wa-num').classList.add('shake');
-        setTimeout(function () { document.getElementById('wa-num').classList.remove('shake'); }, 400);
-        return;
-      }
-      try { localStorage.setItem('G7WA', v); } catch (e) {}
-      m.remove();
-      window.open('https://wa.me/' + v + '?text=' + encodeURIComponent(MSG), '_blank');
-    };
-    document.getElementById('wa-num').onkeydown = function (e) {
-      if (e.key === 'Enter') document.getElementById('wa-save').click();
-    };
-  }
-
-  function esc(s) {
-    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    window.open('https://wa.me/' + NUMBER + '?text=' + encodeURIComponent(MSG), '_blank');
   }
 
   function waSvg(sz) {
@@ -91,25 +37,9 @@ window.G7CONFIG = {
     a.type = 'button';
     a.setAttribute('aria-label', 'Chat with Mr. Akram on WhatsApp');
     a.title = 'Need help? Chat with Mr. Akram';
-    a.innerHTML = waSvg(30) + '<span class="wa-dot">1</span>';
+    a.innerHTML = waSvg(30);
     a.onclick = openChat;
     document.body.appendChild(a);
-
-    /* tiny pencil chip — lets the teacher change the saved number */
-    var e = document.createElement('button');
-    e.id = 'wa-edit';
-    e.className = 'wa-edit';
-    e.type = 'button';
-    e.title = 'Set / change the WhatsApp number';
-    e.setAttribute('aria-label', 'Set WhatsApp number');
-    e.innerHTML = '✎';
-    e.onclick = function (ev) { ev.stopPropagation(); askNumber(); };
-    document.body.appendChild(e);
-
-    /* hide the dot once the number is set */
-    function upd() { a.classList.toggle('unset', !currentNumber()); }
-    upd();
-    setInterval(upd, 4000);
   }
 
   if (document.readyState === 'loading') {

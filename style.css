@@ -264,20 +264,11 @@ h2{font-family:var(--fs); font-weight:600; font-size:1.35rem; color:var(--gold);
    FOUNDER BRANDING · MR. AKRAM
    ════════════════════════════════════════════════════════════ */
 .founder-medal{display:flex; align-items:center; gap:.9rem; padding:.55rem 1.3rem; border:1px solid var(--gold-deep); border-radius:99px; background:rgba(210,164,77,.06)}
-.fm-ring{width:40px; height:40px; flex:none; border-radius:50%; border:1.5px solid var(--gold); display:grid; place-items:center; font-family:var(--fs); font-weight:700; color:var(--gold-hi); font-size:.95rem; letter-spacing:.04em; background:rgba(210,164,77,.08)}
+.fm-ring{width:44px; height:44px; flex:none; border-radius:50%; border:1.5px solid var(--gold); display:grid; place-items:center; font-family:var(--fs); font-weight:600; color:var(--gold-hi); font-size:.66rem; letter-spacing:.02em; background:rgba(210,164,77,.08)}
 .fm-txt{font-size:.82rem; color:var(--muted); letter-spacing:.14em; text-transform:uppercase; line-height:1.5; text-align:left}
 .fm-txt b{display:block; color:var(--gold-hi); font-family:var(--fs); font-size:1.02rem; letter-spacing:.06em; text-transform:none}
-.founder-strip{display:flex; align-items:center; gap:1rem; background:linear-gradient(135deg, rgba(210,164,77,.10), rgba(210,164,77,.03)); border:1px solid var(--gold-deep); border-radius:16px; padding:.9rem 1.2rem; margin-bottom:1.6rem}
-.fs-medal{width:52px; height:52px; flex:none; border-radius:50%; border:1.5px solid var(--gold); display:grid; place-items:center; font-family:var(--fs); font-weight:700; color:var(--gold-hi); font-size:1.15rem; background:rgba(210,164,77,.08); box-shadow:0 0 0 5px rgba(210,164,77,.05)}
-.fs-txt{display:flex; flex-direction:column; gap:.15rem; min-width:0}
-.fs-txt b{font-family:var(--fs); color:var(--gold-hi); font-size:1.18rem; letter-spacing:.04em}
-.fs-txt span{color:var(--muted); font-size:.85rem; line-height:1.55}
 .founder-foot{margin-top:2.2rem; padding-top:1.2rem; border-top:1px solid var(--line); text-align:center; color:var(--faint); font-size:.8rem; letter-spacing:.08em}
 .founder-foot b{color:var(--gold); font-family:var(--fs); letter-spacing:.06em}
-@media(max-width:640px){
-  .fs-txt span{font-size:.78rem}
-  .founder-strip{padding:.7rem .9rem}
-}
 
 /* ════════════════════════════════════════════════════════════
    WHATSAPP FLOAT BUTTON
@@ -287,13 +278,9 @@ h2{font-family:var(--fs); font-weight:600; font-size:1.35rem; color:var(--gold);
 .wa-float:active{transform:scale(.96)}
 .wa-float::after{content:''; position:absolute; inset:-5px; border-radius:50%; border:2px solid rgba(34,197,94,.5); animation:waPulse 2.2s ease-out infinite}
 @keyframes waPulse{0%{transform:scale(.85); opacity:1}70%{transform:scale(1.35); opacity:0}100%{transform:scale(1.35); opacity:0}}
-.wa-float .wa-dot{position:absolute; top:-2px; right:-2px; width:20px; height:20px; border-radius:50%; background:var(--bad); color:#fff; font-size:.72rem; font-weight:700; display:grid; place-items:center; border:2px solid var(--bg)}
-.wa-float.unset .wa-dot{display:grid}
-.wa-float:not(.unset) .wa-dot{display:none}
-.wa-edit{position:fixed; right:76px; bottom:26px; z-index:80; width:32px; height:32px; border-radius:50%; border:1px solid var(--line2); background:var(--card2); color:var(--muted); cursor:pointer; font-size:.85rem; display:grid; place-items:center; transition:color .15s, border-color .15s}
-.wa-edit:hover{color:var(--gold-hi); border-color:var(--gold-deep)}
+.wa-float .wa-dot{display:none}
 .wa-box .wa-ico{color:#22c55e}
-@media print{ .wa-float, .wa-edit{ display:none !important; } }
+@media print{ .wa-float{ display:none !important; } }
 
 /* ════════════════════════════════════════════════════════════
    RESULT GIFT CARD + BADGES
@@ -321,6 +308,51 @@ h2{font-family:var(--fs); font-weight:600; font-size:1.35rem; color:var(--gold);
 }
 
 /* ════════════════════════════════════════════════════════════
+   LESSON CERTIFICATE — on-screen reveal (the celebration)
+   ════════════════════════════════════════════════════════════ */
+.cert-ov{position:fixed; inset:0; z-index:95; background:rgba(8,7,4,.86); display:flex; align-items:center; justify-content:center; padding:1rem; animation:ovIn .25s ease}
+.cert-ov.hidden{display:none}
+@keyframes ovIn{from{opacity:0}to{opacity:1}}
+.cert-ov-card{width:min(640px,100%); display:flex; flex-direction:column; max-height:calc(100vh - 1.6rem)}
+#cert-ov-body{overflow-y:auto; border-radius:16px; -webkit-overflow-scrolling:touch}
+.cert-ov-btns{display:flex; gap:.8rem; justify-content:center; margin-top:1rem; flex:none}
+
+.cs-card{position:relative; overflow:hidden; border-radius:16px; background:linear-gradient(160deg,#faf6ec 0%,#f2e7cc 55%,#eddfbe 100%); border:3px solid #b45309; box-shadow:0 30px 90px rgba(0,0,0,.6), inset 0 0 0 7px #faf6ec, inset 0 0 0 9px #d3a675; animation:certIn .65s cubic-bezier(.18,.9,.28,1.18) both}
+@keyframes certIn{0%{transform:scale(.82) translateY(36px); opacity:0}100%{transform:scale(1) translateY(0); opacity:1}}
+.cs-inner{padding:clamp(1.6rem,4.5vw,2.4rem) clamp(1.1rem,4vw,2.2rem) clamp(1.2rem,3.5vw,1.8rem); text-align:center; position:relative}
+
+.cs-conf{position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:1}
+.cs-conf i{position:absolute; top:-14%; font-style:normal; font-size:.95rem; opacity:0; animation:confFall linear infinite}
+@keyframes confFall{0%{transform:translateY(0) rotate(0deg); opacity:0}12%{opacity:1}82%{opacity:1}100%{transform:translateY(560px) rotate(320deg); opacity:0}}
+
+.cs-inner > *{position:relative; z-index:2}
+.cs-eyebrow{font-size:.68rem; letter-spacing:.3em; color:#8a6a2a; font-weight:700; text-transform:uppercase}
+.cs-title{font-family:var(--fs); font-size:clamp(1.55rem,4.6vw,2.15rem); font-weight:700; color:#b45309; margin:.45rem 0 0; letter-spacing:.04em}
+.cs-seal{width:66px; height:66px; margin:1rem auto .5rem; border-radius:50%; border:2px solid #b45309; display:grid; place-items:center; font-family:Georgia,serif; font-weight:900; color:#7c5b1c; font-size:.82rem; letter-spacing:.05em; background:radial-gradient(circle at 35% 30%, #fff9e8, #eedfae); box-shadow:0 0 0 5px #faf6ec, 0 0 0 6.5px #d3a675, 0 0 26px rgba(180,83,9,.22); animation:sealPop .6s .35s cubic-bezier(.2,.9,.3,1.4) both}
+@keyframes sealPop{0%{transform:scale(0) rotate(-40deg)}100%{transform:scale(1) rotate(0)}}
+.cs-line{color:#64748b; font-size:.88rem; margin-top:.65rem}
+.cs-name{font-family:var(--fs); font-size:clamp(1.65rem,5vw,2.3rem); font-weight:600; color:#1e293b; margin:.35rem auto .15rem; border-bottom:2px solid #b45309; display:inline-block; padding:0 28px 6px; min-width:220px; animation:nameIn .6s .5s ease both}
+@keyframes nameIn{0%{opacity:0; letter-spacing:.12em}100%{opacity:1; letter-spacing:0}}
+.cs-lesson{font-family:Georgia,serif; font-weight:900; color:#1e293b; font-size:1.12rem; margin-top:.55rem; line-height:1.35}
+.cs-sub{color:#64748b; font-style:italic; font-size:.84rem; margin-top:.2rem}
+.cs-score{margin-top:.85rem; color:#7c5b1c; font-weight:700; font-size:.92rem}
+.cs-score b{font-size:1.35rem; color:#b45309; font-family:var(--fs)}
+.cs-stars{font-size:1.25rem; letter-spacing:7px; margin:.35rem 0 .1rem}
+.cs-award{margin:.55rem auto 0; max-width:430px; background:#fdf6e3; border:1.5px dashed #b45309; color:#7c5b1c; border-radius:9px; padding:7px 14px; font-weight:600; font-size:.84rem}
+.cs-foot{display:flex; justify-content:space-around; margin-top:1.5rem; gap:1.2rem; flex-wrap:wrap}
+.cs-sig{display:flex; align-items:flex-end; gap:.6rem; text-align:left}
+.cs-mono{width:46px; height:46px; flex:none; border-radius:50%; border:1.5px solid #b45309; display:grid; place-items:center; font-family:Georgia,serif; font-weight:900; color:#7c5b1c; font-size:.66rem; letter-spacing:.04em; background:radial-gradient(circle at 35% 30%,#fff9e8,#eedfae); margin-bottom:.2rem}
+.cs-sig .sig{border-top:1.5px solid #64748b; padding-top:6px; min-width:150px; font-family:Georgia,serif; color:#1e293b; font-weight:900; font-size:1rem; line-height:1.35}
+.cs-sig .sig i{display:block; font-family:var(--fb); font-style:normal; font-weight:500; color:#64748b; font-size:.72rem; letter-spacing:.05em; text-transform:uppercase; margin-top:2px}
+
+@media(max-width:560px){
+  .cs-foot{gap:.8rem}
+  .cs-sig .sig{min-width:120px}
+  .cs-conf i{font-size:.8rem}
+  .cert-ov-btns .btn{width:100%}
+}
+
+/* ════════════════════════════════════════════════════════════
    PRINT — A4 sheets (guides, worksheets, bubbles, key, cert)
    ════════════════════════════════════════════════════════════ */
 #print-area{display:none}
@@ -328,7 +360,7 @@ h2{font-family:var(--fs); font-weight:600; font-size:1.35rem; color:var(--gold);
 @media print{
   @page{ size:A4 portrait; margin:11mm; }
   body{ background:#fff; font-size:12pt; }
-  .screen, .toast, .modal, .alarm, #br-ov, .wa-float, .wa-edit{ display:none !important; }
+  .screen, .toast, .modal, .alarm, #br-ov, .wa-float, .cert-ov{ display:none !important; }
   #print-area{ display:block; }
   .pg-sheet{ page-break-after:always; }
   .pg-sheet:last-child{ page-break-after:auto; }
@@ -392,6 +424,8 @@ h2{font-family:var(--fs); font-weight:600; font-size:1.35rem; color:var(--gold);
   .cert .c-sig{ text-align:center; font-size:10pt; color:#475569; }
   .cert .c-sig b{ font-family:Georgia,serif; font-size:15pt; color:#1e293b; }
   .cert .c-sig .sigline{ border-top:1.5px solid #475569; margin:0 12px; padding-top:6px; min-width:170px; }
+  .cert .c-sig{ display:flex; align-items:flex-end; }
+  .cert .c-mono{ width:46px; height:46px; flex:none; margin:0 6px .2rem; border-radius:50%; border:2px solid #b45309; display:grid; place-items:center; font-family:Georgia,serif; font-weight:900; font-size:9.5pt; letter-spacing:.5px; color:#7c5b1c; background:radial-gradient(circle at 35% 30%, #fff9e8, #eedfae); }
 
   /* ── lesson certificate (Certificate of Appreciation) ── */
   .cert .c-seal{ width:74px; height:74px; margin:0 auto 10px; border-radius:50%; border:2.5px solid #b45309; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:Georgia,serif; font-weight:900; color:#7c5b1c; background:#fdf6e3; box-shadow:0 0 0 4px #faf6ec, 0 0 0 5.5px #d3a675; }

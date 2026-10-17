@@ -169,17 +169,71 @@
 
   /* ═══════════════ 3) الشهادات ═══════════════ */
 
-  /* 🎓 شهادة تقدير بعد كل درس — باسم مستر اكرم */
+  function escTxt(s) {
+    s = String(s == null ? '' : s);
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+  function starsOf(pct) { return pct >= 90 ? 3 : (pct >= 70 ? 2 : 1); }
+  function starsStr(n) { var s = ''; for (var i = 0; i < n; i++) s += '⭐'; return s; }
+
+  /* 🎓 شهادة تقدير بعد كل درس — تظهر على الشاشة فورًا + نسخة طباعة */
+  function showLessonCert(lessonId, info) {
+    var L = G7.lessonById(lessonId);
+    if (!L) { G7.toast('Lesson not found.'); return; }
+    var st = G7.state;
+    info = info || {};
+    var pct = info.pct != null ? info.pct : 100;
+    var level = info.level === 'medium' ? 'Medium' : 'Easy';
+    var bd = G7.badgeOf ? G7.badgeOf(L) : { ico: '🏅', name: L.code + ' Champion' };
+
+    /* golden confetti */
+    var conf = '';
+    var CI = ['✨', '⭐', '🎉', '🏅', '✨', '💫', '🏆'];
+    for (var c = 0; c < 18; c++) {
+      conf += '<i style="left:' + (2 + (c * 5.4)).toFixed(1) + '%;animation-delay:' + (c * 0.22).toFixed(2) +
+        's;animation-duration:' + (2.4 + (c % 5) * 0.45).toFixed(2) + 's">' + CI[c % CI.length] + '</i>';
+    }
+
+    var html = '<div class="cs-card">' +
+      '<div class="cs-conf">' + conf + '</div>' +
+      '<div class="cs-inner">' +
+        '<div class="cs-eyebrow">Aid Mathematics Academy · Grade 7</div>' +
+        '<h2 class="cs-title">Certificate of Appreciation</h2>' +
+        '<div class="cs-seal">akram</div>' +
+        '<div class="cs-line">This certificate is proudly presented to</div>' +
+        '<div class="cs-name">' + escTxt(st.name) + '</div>' +
+        '<div class="cs-line">for outstanding effort and success in</div>' +
+        '<div class="cs-lesson">Lesson ' + escTxt(L.code) + ' · ' + escTxt(L.title) + '</div>' +
+        '<div class="cs-sub">' + escTxt(L.sub) + '</div>' +
+        '<div class="cs-score"><b>' + pct + '%</b> &nbsp;·&nbsp; ' + (info.score || 0) + '/' + (info.total || 20) +
+          ' questions &nbsp;·&nbsp; ' + level + ' level</div>' +
+        '<div class="cs-stars">' + starsStr(starsOf(pct)) + '</div>' +
+        '<div class="cs-award">' + bd.ico + ' ' + escTxt(bd.name) + ' — badge earned, keep collecting them all!</div>' +
+        '<div class="cs-foot">' +
+          '<div class="cs-sig"><span class="cs-mono">akram</span>' +
+            '<span class="sig"><b>Mr. Akram</b><i>Founder &amp; Mathematics Coach</i></span></div>' +
+          '<div class="cs-sig"><span class="sig"><b>' + today() + '</b><i>Date</i></span></div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+
+    var ov = $('cert-ov');
+    $('cert-ov-body').innerHTML = html;
+    ov.classList.remove('hidden');
+    $('cert-ov-close').onclick = function () { ov.classList.add('hidden'); };
+    $('cert-ov-print').onclick = function () { printLessonCert(lessonId, info); };
+    if (G7.sfx) { try { G7.sfx.win(); } catch (e) {} }
+  }
+
+  /* نسخة الطباعة — A4 موقعة من مستر اكرم */
   function printLessonCert(lessonId, info) {
     var L = G7.lessonById(lessonId);
     if (!L) { G7.toast('Lesson not found.'); return; }
     var st = G7.state;
     info = info || {};
     var pct = info.pct != null ? info.pct : 100;
-    var stars = pct >= 90 ? 3 : (pct >= 70 ? 2 : 1);
-    var s2 = '';
-    for (var i = 0; i < stars; i++) s2 += '⭐';
     var level = info.level === 'medium' ? 'Medium' : 'Easy';
+    var bd = G7.badgeOf ? G7.badgeOf(L) : { name: 'Lesson ' + L.code + ' Champion' };
 
     var html = '<div class="pg-sheet"><div class="cert lc">' +
       '<div class="c-seal">A<span>ID</span></div>' +
@@ -187,16 +241,16 @@
       '<div class="c-eyebrow">GRADE 7 · MR. AKRAM\'S CLASS</div>' +
       '<div class="c-t">CERTIFICATE OF APPRECIATION</div>' +
       '<div class="c-line">This certificate is proudly presented to</div>' +
-      '<div class="c-name">' + st.name + '</div>' +
+      '<div class="c-name">' + escTxt(st.name) + '</div>' +
       '<div class="c-line">for outstanding effort and success in</div>' +
-      '<div class="c-lesson">Lesson ' + L.code + ' · ' + L.title + '</div>' +
-      '<div class="c-sub">' + L.sub + '</div>' +
+      '<div class="c-lesson">Lesson ' + escTxt(L.code) + ' · ' + escTxt(L.title) + '</div>' +
+      '<div class="c-sub">' + escTxt(L.sub) + '</div>' +
       '<div class="c-line">Passed with a score of <b>' + pct + '%</b> (' + (info.score || 0) + '/' + (info.total || 20) +
         ' questions · ' + level + ' level)</div>' +
-      '<div class="c-stars">' + s2 + '</div>' +
-      '<div class="c-award">🏅 Badge earned: ' + (G7.badgeOf ? G7.badgeOf(L).name : 'Lesson ' + L.code + ' Champion') + ' — keep collecting them all!</div>' +
+      '<div class="c-stars">' + starsStr(starsOf(pct)) + '</div>' +
+      '<div class="c-award">🏅 Badge earned: ' + escTxt(bd.name) + ' — keep collecting them all!</div>' +
       '<div class="c-foot">' +
-        '<div class="c-sig"><div class="sigline"><b>Mr. Akram</b><br>Founder &amp; Mathematics Coach</div></div>' +
+        '<div class="c-sig"><div class="c-mono">akram</div><div class="sigline"><b>Mr. Akram</b><br>Founder &amp; Mathematics Coach</div></div>' +
         '<div class="c-sig"><div class="sigline"><b>' + today() + '</b><br>Date</div></div>' +
       '</div>' +
     '</div></div>';
@@ -227,7 +281,7 @@
       '<div class="c-stars">' + st2 + '</div>' +
       '<div class="c-line">Completed ' + done + ' lessons · Final Exam Passed · Badges earned: ' + (st.badges ? Object.keys(st.badges).length : 0) + ' · Coins earned: ' + st.coins + '</div>' +
       '<div class="c-foot">' +
-        '<div class="c-sig"><div class="sigline"><b>Mr. Akram</b><br>Founder & Mathematics Coach</div></div>' +
+        '<div class="c-sig"><div class="c-mono">akram</div><div class="sigline"><b>Mr. Akram</b><br>Founder & Mathematics Coach</div></div>' +
         '<div class="c-sig"><div class="sigline"><b>' + today() + '</b><br>Date</div></div>' +
       '</div>' +
     '</div></div>';
@@ -241,6 +295,7 @@
     G7.printWorksheet = printWorksheet;
     G7.printLessonCert = printLessonCert;
     G7.printCertificate = printCertificate;
+    G7.showLessonCert = showLessonCert;
   }
   hook();
 })();
